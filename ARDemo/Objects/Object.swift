@@ -10,7 +10,7 @@ import ARKit
 
 class Objects: SCNNode{
     
-    static var CyberTruckPath = "CyberTruck.scn"
+    static var CyberTruckPath = "Cybertruck.scn"
     static var Animal = "dog/dog.scn"
     
     func loadModel(filename: String){
@@ -22,6 +22,7 @@ class Objects: SCNNode{
                 child.castsShadow = true
                 wrapperNode.addChildNode(child)
             }
+                
             print("Model Loaded Ending")
             addChildNode(wrapperNode)
         

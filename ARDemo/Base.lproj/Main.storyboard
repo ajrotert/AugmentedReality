@@ -184,7 +184,7 @@
                                     <action selector="ResizeClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="v3Q-fJ-634"/>
                                 </connections>
                             </button>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="5" minValue="0.0" maxValue="5" translatesAutoresizingMaskIntoConstraints="NO" id="a1p-h2-IJp">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.01" minValue="0.0" maxValue="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="a1p-h2-IJp">
                                 <rect key="frame" x="148" y="721" width="118" height="31"/>
                                 <connections>
                                     <action selector="SliderChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="b80-CJ-gPB"/>
@@ -236,6 +236,7 @@
                         <outlet property="RLeftButton" destination="wtg-Yk-9pa" id="Oyp-KF-mKM"/>
                         <outlet property="RRightButton" destination="8Kl-jE-dhY" id="9Kg-Mg-oqr"/>
                         <outlet property="RightButton" destination="sQe-fx-k9v" id="x4G-pt-gFB"/>
+                        <outlet property="SelectOptions" destination="2tW-ys-msa" id="ezo-hh-HDi"/>
                         <outlet property="Slider" destination="a1p-h2-IJp" id="6aZ-Yn-9jH"/>
                         <outlet property="UpButton" destination="y9i-Qf-9ao" id="Sw4-FX-7mV"/>
                         <outlet property="sceneAR" destination="xnX-rc-Efh" id="vTT-6c-scF"/>

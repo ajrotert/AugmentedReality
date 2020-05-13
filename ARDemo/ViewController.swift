@@ -9,9 +9,8 @@
 import ARKit
 import UIKit
 
-let kStartingPosition = SCNVector3(0, 0, 0)
 let kAnimationDurationMoving: TimeInterval = 0.2
-var kMovingLengthPerLoop: CGFloat = 5
+var kMovingLengthPerLoop: CGFloat = 0.05
 let kRotationRadianPerLoop: CGFloat = 0.05
 
 
@@ -43,9 +42,6 @@ class ViewController: UIViewController {
         
     let documentInteractionController = UIDocumentInteractionController()
     
-    
-    
-    
     enum Options: String{
         case cyberTruck = "Tesla CyberTruck"
         case animal = "Dog"
@@ -53,6 +49,7 @@ class ViewController: UIViewController {
     }
     
     @IBOutlet var MenuOptions: [UIButton]!
+    @IBOutlet weak var SelectOptions: UIButton!
     
     @IBAction func SelectObjectButton(_ sender: UIButton) {
         MenuOptions.forEach{(button) in
@@ -142,16 +139,32 @@ class ViewController: UIViewController {
     }
     @IBAction func SliderChanged(_ sender: UISlider) {
         let unit = sender.value
-        kMovingLengthPerLoop = CGFloat(unit)
+        object.scale = SCNVector3(unit, unit, unit)
+    }
+
+    @objc func updateStartingVector(withGestureRecognizer recognizer: UIGestureRecognizer) {
+        let tapLocation = recognizer.location(in: sceneAR)
+        let hitTestResults = sceneAR.hitTest(tapLocation, types: .existingPlaneUsingExtent)
+        
+        guard let hitTestResult = hitTestResults.first else { return }
+        let translation = hitTestResult.worldTransform.columns.3
+        let x = translation.x
+        let y = translation.y
+        let z = translation.z
+        
+        addPosition = SCNVector3(x,y,z)
+        print("Plane Selected")
     }
     
     var object = Objects()
     
     var geometryNode: SCNNode = SCNNode()
     var currentAngle: Float = 0.0
+    var addPosition: SCNVector3 = SCNVector3(0,0,0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        addTapGestureToSceneView()
         setupScene()
         // Do any additional setup after loading the view.
     }
@@ -168,6 +181,9 @@ class ViewController: UIViewController {
     }
     func setupConfiguration() {
         let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = .horizontal
+        sceneAR.delegate = self
+        //sceneAR.debugOptions = .showFeaturePoints
         sceneAR.session.run(configuration)
     }
     func addObject(path: String) {
@@ -175,23 +191,26 @@ class ViewController: UIViewController {
         object.removeFromParentNode()
         object = Objects()
         object.loadModel(filename: path)
-        object.position = kStartingPosition
+        object.position = addPosition
         object.rotation = SCNVector4Zero
         sceneAR.scene.rootNode.addChildNode(object)
-
+        SliderChanged(Slider)
     }
     func addObject(urlpath: URL) {
         print("addObject 2")
         object.removeFromParentNode()
         object = Objects()
         object.loadModel(urlname: urlpath)
-        object.position = kStartingPosition
+        object.position = addPosition
         object.rotation = SCNVector4Zero
         sceneAR.scene.rootNode.addChildNode(object)
-
+        SliderChanged(Slider)
     }
-    
 
+    func addTapGestureToSceneView() {
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.updateStartingVector(withGestureRecognizer:)))
+        sceneAR.addGestureRecognizer(tapGestureRecognizer)
+    }
     private func moveObject(x: CGFloat, z: CGFloat, sender: Any) {
         let action = SCNAction.moveBy(x: x, y: 0, z: z, duration: kAnimationDurationMoving)
         execute(action: action, sender: sender)
@@ -211,5 +230,56 @@ class ViewController: UIViewController {
         object.runAction(loopAction)
     }
 }
-
+extension ViewController: ARSCNViewDelegate {
+     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+      // 1
+      guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+      
+      // 2
+      let width = CGFloat(planeAnchor.extent.x)
+      let height = CGFloat(planeAnchor.extent.z)
+      let plane = SCNPlane(width: width, height: height)
+      
+      // 3
+      plane.materials.first?.diffuse.contents = UIColor.transparentDeveloperColor
+      
+      // 4
+      let planeNode = SCNNode(geometry: plane)
+      
+      // 5
+      let x = CGFloat(planeAnchor.center.x)
+      let y = CGFloat(planeAnchor.center.y)
+      let z = CGFloat(planeAnchor.center.z)
+      planeNode.position = SCNVector3(x,y,z)
+      planeNode.eulerAngles.x = -.pi / 2
+      
+      // 6
+      node.addChildNode(planeNode)
+        
+    }
+    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+        // 1
+         guard let planeAnchor = anchor as?  ARPlaneAnchor,
+             let planeNode = node.childNodes.first,
+             let plane = planeNode.geometry as? SCNPlane
+             else { return }
+      
+         // 2
+         let width = CGFloat(planeAnchor.extent.x)
+         let height = CGFloat(planeAnchor.extent.z)
+         plane.width = width
+         plane.height = height
+          
+         // 3
+         let x = CGFloat(planeAnchor.center.x)
+         let y = CGFloat(planeAnchor.center.y)
+         let z = CGFloat(planeAnchor.center.z)
+         planeNode.position = SCNVector3(x, y, z)
+    }
+}
+extension UIColor {
+    open class var transparentDeveloperColor: UIColor {
+        return UIColor(red: 0/255, green: 102/255, blue: 255/255, alpha: 0.65)
+    }
+}
 
