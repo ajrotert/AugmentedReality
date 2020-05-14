@@ -8,12 +8,12 @@
 
 import ARKit
 import UIKit
+import MobileCoreServices
 
 let kAnimationDurationMoving: TimeInterval = 0.2
 var kMovingLengthPerLoop: CGFloat = 0.05
 let kRotationRadianPerLoop: CGFloat = 0.05
-
-
+var planeColorHidden: Bool = false
 
 extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelegate {
 
@@ -69,7 +69,9 @@ class ViewController: UIViewController {
         case .animal:
             path = Objects.Animal
         case .custom:
-            let importMenu = UIDocumentPickerViewController(documentTypes: ["public.data"], in: .import)
+            
+            let types: [String] = [kUTType3dObject as String, kUTType3DContent as String, kUTTypeUniversalSceneDescription as String, kUTTypeStereolithography as String]
+            let importMenu = UIDocumentPickerViewController(documentTypes: types, in: .import)
             importMenu.delegate = self
             importMenu.modalPresentationStyle = .formSheet
             present(importMenu, animated: true, completion: nil)
@@ -90,7 +92,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var CloserButton: UIButton!
     @IBOutlet weak var FreeButton: UIButton!
     @IBOutlet weak var Slider: UISlider!
-    
+
     @IBAction func Up(_ sender: Any) {
         let x = deltas().sin
         let z = deltas().cos
@@ -153,6 +155,14 @@ class ViewController: UIViewController {
         let z = translation.z
         
         addPosition = SCNVector3(x,y,z)
+        planeColorHidden = true
+        
+        for child in sceneAR.scene.rootNode.childNodes{
+            if(child.name == "plane"){
+                child.isHidden = planeColorHidden
+            }
+        }
+        
         print("Plane Selected")
     }
     
@@ -241,7 +251,7 @@ extension ViewController: ARSCNViewDelegate {
       let plane = SCNPlane(width: width, height: height)
       
       // 3
-      plane.materials.first?.diffuse.contents = UIColor.transparentDeveloperColor
+        plane.materials.first?.diffuse.contents = UIColor.transparentDeveloperColor
       
       // 4
       let planeNode = SCNNode(geometry: plane)
@@ -252,9 +262,12 @@ extension ViewController: ARSCNViewDelegate {
       let z = CGFloat(planeAnchor.center.z)
       planeNode.position = SCNVector3(x,y,z)
       planeNode.eulerAngles.x = -.pi / 2
-      
+
+        node.isHidden = planeColorHidden
       // 6
       node.addChildNode(planeNode)
+        node.name = "plane"
+        sceneAR.scene.rootNode.addChildNode(node)
         
     }
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
@@ -269,7 +282,7 @@ extension ViewController: ARSCNViewDelegate {
          let height = CGFloat(planeAnchor.extent.z)
          plane.width = width
          plane.height = height
-          
+                  
          // 3
          let x = CGFloat(planeAnchor.center.x)
          let y = CGFloat(planeAnchor.center.y)
@@ -281,5 +294,6 @@ extension UIColor {
     open class var transparentDeveloperColor: UIColor {
         return UIColor(red: 0/255, green: 102/255, blue: 255/255, alpha: 0.65)
     }
+
 }
 

@@ -29,7 +29,7 @@ class Objects: SCNNode{
     }
     func loadModel(urlname: URL){
         print("Model URL Load")
-
+        
         do{
             let virtualObjectScene = try SCNScene(url: urlname)
             let wrapperNode = SCNNode()
@@ -38,6 +38,7 @@ class Objects: SCNNode{
                 wrapperNode.addChildNode(child)
             }
             print("Model Loaded Ending")
+            
             addChildNode(wrapperNode)
         }
         catch{
