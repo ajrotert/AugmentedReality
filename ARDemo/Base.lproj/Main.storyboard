@@ -190,6 +190,13 @@
                                     <action selector="SliderChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="b80-CJ-gPB"/>
                                 </connections>
                             </slider>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TzT-i5-xCB">
+                                <rect key="frame" x="160" y="102" width="94" height="30"/>
+                                <state key="normal" title="Show Physics"/>
+                                <connections>
+                                    <action selector="Debug:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1tI-pb-XpR"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -200,17 +207,20 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Isl-Sk-94B" secondAttribute="trailing" constant="80" id="7B8-dV-8Db"/>
                             <constraint firstItem="8Kl-jE-dhY" firstAttribute="leading" secondItem="Qt4-d1-PvU" secondAttribute="trailing" constant="10" id="7t0-Lj-2kF"/>
                             <constraint firstItem="wF2-e2-9CJ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="78" id="8lq-T1-ewg"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="TzT-i5-xCB" secondAttribute="trailing" constant="160" id="K2N-Jz-vqG"/>
                             <constraint firstItem="xnX-rc-Efh" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Lfd-uo-Tya"/>
                             <constraint firstItem="xnX-rc-Efh" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Lo9-9d-hUb"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="6VN-xZ-9Gf" secondAttribute="bottom" constant="51" id="NUX-xS-xBg"/>
                             <constraint firstItem="wtg-Yk-9pa" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="P9z-BA-xAn"/>
                             <constraint firstItem="gHe-Jx-KQr" firstAttribute="bottom" secondItem="wF2-e2-9CJ" secondAttribute="bottom" id="PrT-xo-Q4b"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="sQe-fx-k9v" secondAttribute="trailing" constant="20" id="Rmj-SP-WtY"/>
+                            <constraint firstItem="TzT-i5-xCB" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="160" id="UF6-eT-dDE"/>
                             <constraint firstItem="Isl-Sk-94B" firstAttribute="leading" secondItem="a1p-h2-IJp" secondAttribute="trailing" constant="20" id="V54-KI-8e3"/>
                             <constraint firstItem="Isl-Sk-94B" firstAttribute="leading" secondItem="gHe-Jx-KQr" secondAttribute="trailing" constant="8" id="YDJ-4w-kFi"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="xJh-vf-utt" secondAttribute="trailing" id="aCc-Wn-ugP"/>
                             <constraint firstItem="y9i-Qf-9ao" firstAttribute="leading" secondItem="6VN-xZ-9Gf" secondAttribute="trailing" constant="8" id="bNt-ES-Wyi"/>
                             <constraint firstItem="gHe-Jx-KQr" firstAttribute="leading" secondItem="wF2-e2-9CJ" secondAttribute="trailing" constant="10" id="bRU-xS-00m"/>
+                            <constraint firstItem="TzT-i5-xCB" firstAttribute="top" secondItem="xJh-vf-utt" secondAttribute="bottom" constant="8" id="c8n-t1-yLF"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="sQe-fx-k9v" secondAttribute="bottom" constant="51" id="etC-Bg-zZR"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Isl-Sk-94B" secondAttribute="trailing" constant="80" id="exa-mT-zCv"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Isl-Sk-94B" secondAttribute="bottom" constant="1.5" id="gcI-E3-CD1"/>
@@ -230,6 +240,7 @@
                     <connections>
                         <outlet property="AwayButton" destination="Qt4-d1-PvU" id="RNO-of-fU1"/>
                         <outlet property="CloserButton" destination="wF2-e2-9CJ" id="mJs-is-V9E"/>
+                        <outlet property="DebugLabel" destination="TzT-i5-xCB" id="xSD-Se-9l1"/>
                         <outlet property="DownButton" destination="Isl-Sk-94B" id="xTj-gG-cfz"/>
                         <outlet property="FreeButton" destination="gHe-Jx-KQr" id="jyd-c4-goe"/>
                         <outlet property="LeftButton" destination="6VN-xZ-9Gf" id="PMG-od-4fq"/>

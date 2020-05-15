@@ -30,26 +30,27 @@ extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelega
         print("URL Path: " + url.path)
         print("Path: " + url.standardizedFileURL.absoluteString)
                
-        if(url.path.contains("/tmp/")){
+        if(!url.path.lowercased().contains(".obj") && !url.path.lowercased().contains(".dae") && !url.path.lowercased().contains(".usdz") && !url.path.lowercased().contains(".usda") && !url.path.lowercased().contains(".usd") && !url.path.lowercased().contains(".usdc") && !url.path.lowercased().contains(".abc") && !url.path.lowercased().contains(".ply") && !url.path.lowercased().contains(".stl") && !url.path.lowercased().contains(".scn") ){
             print("Multiple files selected")
+            
             var urlpath = url.deletingLastPathComponent()
             let fileManager = FileManager.default
             
             do{
             let files = try fileManager.contentsOfDirectory(atPath: urlpath.path)
                 for file in files{
-                    if(!file.contains("mtl"))
+                    if(file.lowercased().contains(".dae") || file.lowercased().contains(".usdz") || file.lowercased().contains(".usda") || file.lowercased().contains(".usd") || file.lowercased().contains(".usdc") || file.lowercased().contains(".abc") || file.lowercased().contains(".ply") || file.lowercased().contains(".stl") || file.lowercased().contains(".scn") || file.lowercased().contains(".obj"))
                     {
                         urlpath.appendPathComponent(file)
                         print("New URL: ", urlpath.path)
                     }
+                    addObject(urlpath: urlpath)
                 }
             }
             catch{
                 print("file error")
             }
             
-            addObject(urlpath: urlpath)
         }
         else{
             addObject(urlpath: url)
@@ -117,7 +118,31 @@ class ViewController: UIViewController {
     @IBOutlet weak var CloserButton: UIButton!
     @IBOutlet weak var FreeButton: UIButton!
     @IBOutlet weak var Slider: UISlider!
-
+    @IBOutlet weak var DebugLabel: UIButton!
+    
+    @IBAction func Debug(_ sender: Any) {
+        let fileManager = FileManager.default
+        
+        do{
+        let files = try fileManager.contentsOfDirectory(atPath: NSTemporaryDirectory())
+            for file in files{
+                print(file, "\n")
+            }
+        }
+        catch{
+            print("file error")
+        }
+        let label = DebugLabel.currentTitle
+        if(label == "Show Physics")
+        {
+            sceneAR.debugOptions = [.renderAsWireframe, .showBoundingBoxes, .showCreases, .showFeaturePoints, .showPhysicsFields, .showPhysicsShapes, .showSkeletons]
+            DebugLabel.setTitle("Hide Physics", for: UIControl.State.normal)
+        }
+        else{
+            sceneAR.debugOptions = []
+            DebugLabel.setTitle("Show Physics", for: UIControl.State.normal)
+        }
+    }
     @IBAction func Up(_ sender: Any) {
         let x = deltas().sin
         let z = deltas().cos
@@ -206,6 +231,18 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setupConfiguration()
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        print("App Closed")
+        print(NSTemporaryDirectory())
+        let fileManager = FileManager.default
+        do{
+            try fileManager.removeItem(atPath: NSTemporaryDirectory())
+        }
+        catch{
+            print("file deletion error")
+        }
     }
     
     func setupScene() {
