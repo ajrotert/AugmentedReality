@@ -19,6 +19,7 @@ extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelega
 
     func documentMenu(_ documentMenu: UIDocumentPickerViewController, didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
         documentPicker.delegate = self
+        documentPicker.allowsMultipleSelection = true
         self.present(documentPicker, animated: true, completion: nil)
     }
 
@@ -28,8 +29,31 @@ extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelega
         print("Rel String: " + url.relativeString)
         print("URL Path: " + url.path)
         print("Path: " + url.standardizedFileURL.absoluteString)
-                
-        addObject(urlpath: url)
+               
+        if(url.path.contains("/tmp/")){
+            print("Multiple files selected")
+            var urlpath = url.deletingLastPathComponent()
+            let fileManager = FileManager.default
+            
+            do{
+            let files = try fileManager.contentsOfDirectory(atPath: urlpath.path)
+                for file in files{
+                    if(!file.contains("mtl"))
+                    {
+                        urlpath.appendPathComponent(file)
+                        print("New URL: ", urlpath.path)
+                    }
+                }
+            }
+            catch{
+                print("file error")
+            }
+            
+            addObject(urlpath: urlpath)
+        }
+        else{
+            addObject(urlpath: url)
+        }
 
     }
 
@@ -70,11 +94,12 @@ class ViewController: UIViewController {
             path = Objects.Animal
         case .custom:
             
-            let types: [String] = [kUTType3dObject as String, kUTType3DContent as String, kUTTypeUniversalSceneDescription as String, kUTTypeStereolithography as String]
+            let types: [String] = [kUTTypeItem as String]
             let importMenu = UIDocumentPickerViewController(documentTypes: types, in: .import)
             importMenu.delegate = self
             importMenu.modalPresentationStyle = .formSheet
-            present(importMenu, animated: true, completion: nil)
+            importMenu.allowsMultipleSelection = true
+            present(importMenu, animated: false, completion: nil)
         }
         addObject(path: path)
         SelectObjectButton(sender)
