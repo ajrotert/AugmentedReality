@@ -12,6 +12,7 @@ class Objects: SCNNode{
     
     static var CyberTruckPath = "Cybertruck.scn"
     static var Animal = "dog/dog.scn"
+    static var Formula = "formula 1/Formula.scn"
     
     func loadModel(filename: String){
         print("Model File Load")
@@ -19,11 +20,11 @@ class Objects: SCNNode{
             guard let virtualObjectScene = SCNScene(named: filename) else {return}
             let wrapperNode = SCNNode()
             for child in virtualObjectScene.rootNode.childNodes{
-                child.castsShadow = true
                 wrapperNode.addChildNode(child)
             }
                 
             print("Model Loaded Ending")
+            wrapperNode.castsShadow = true
             addChildNode(wrapperNode)
         
     }
@@ -34,11 +35,22 @@ class Objects: SCNNode{
             let virtualObjectScene = try SCNScene(url: urlname)
             let wrapperNode = SCNNode()
             for child in virtualObjectScene.rootNode.childNodes{
-                child.castsShadow = true
+                
+                if(child.geometry?.materials.count == 1){
+                    child.geometry?.materials.first?.diffuse.contents = UIColor.darkGray
+                    child.geometry?.materials.first?.diffuse.intensity = CGFloat(3)
+                    child.geometry?.materials.first?.metalness.intensity = CGFloat(5)
+                    child.geometry?.materials.first?.roughness.intensity = CGFloat(0.5)
+                }
+                else{
+                    print("Materials: ", child.geometry?.materials.count ?? "cannot determine")
+                }
+                
                 wrapperNode.addChildNode(child)
             }
             print("Model Loaded Ending")
             
+            wrapperNode.castsShadow = true
             addChildNode(wrapperNode)
         }
         catch{

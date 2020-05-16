@@ -70,6 +70,7 @@ class ViewController: UIViewController {
     enum Options: String{
         case cyberTruck = "Tesla CyberTruck"
         case animal = "Dog"
+        case formula = "Formula One"
         case custom = "Use Your Own"
     }
     
@@ -93,6 +94,8 @@ class ViewController: UIViewController {
             path = Objects.CyberTruckPath
         case .animal:
             path = Objects.Animal
+        case .formula:
+            path = Objects.Formula
         case .custom:
             
             let types: [String] = [kUTTypeItem as String]
@@ -135,7 +138,7 @@ class ViewController: UIViewController {
         let label = DebugLabel.currentTitle
         if(label == "Show Physics")
         {
-            sceneAR.debugOptions = [.renderAsWireframe, .showBoundingBoxes, .showCreases, .showFeaturePoints, .showPhysicsFields, .showPhysicsShapes, .showSkeletons]
+            sceneAR.debugOptions = [.renderAsWireframe, .showBoundingBoxes, .showFeaturePoints, .showPhysicsFields, .showPhysicsShapes]
             DebugLabel.setTitle("Hide Physics", for: UIControl.State.normal)
         }
         else{
@@ -255,7 +258,6 @@ class ViewController: UIViewController {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
         sceneAR.delegate = self
-        //sceneAR.debugOptions = .showFeaturePoints
         sceneAR.session.run(configuration)
     }
     func addObject(path: String) {
