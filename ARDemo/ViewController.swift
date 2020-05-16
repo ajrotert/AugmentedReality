@@ -38,6 +38,14 @@ class ViewController: UIViewController {
     @IBAction func ObjectClicked(_ sender: UIButton) {
         guard let title = sender.currentTitle, let option = Options(rawValue: title) else { return }
     
+        let fileManager = FileManager.default
+        do{
+            try fileManager.removeItem(atPath: NSTemporaryDirectory())
+        }
+        catch{
+            print("file deletion error")
+        }
+        
         var path = ""
         switch option{
         case .cyberTruck:
@@ -72,19 +80,20 @@ class ViewController: UIViewController {
     @IBOutlet weak var FreeButton: UIButton!
     @IBOutlet weak var Slider: UISlider!
     @IBOutlet weak var DebugLabel: UIButton!
+    @IBOutlet weak var HideControls: UIButton!
     
     @IBAction func Debug(_ sender: Any) {
         let fileManager = FileManager.default
-        
         do{
-        let files = try fileManager.contentsOfDirectory(atPath: NSTemporaryDirectory())
+            let files = try fileManager.contentsOfDirectory(atPath: NSTemporaryDirectory())
             for file in files{
-                print(file, "\n")
+                print(file)
             }
         }
         catch{
-            print("file error")
+            print("file deletion error")
         }
+        
         let label = DebugLabel.currentTitle
         if(label == "Show Physics")
         {
@@ -140,6 +149,7 @@ class ViewController: UIViewController {
             sceneAR.addGestureRecognizer(panRecognizer)
         }
         else{
+            sceneAR.scene.background.contents = UIImage(named: "Background")
             sender.setTitle("Reset to Fixed", for: UIControl.State.normal)
             for gesture in sceneAR.gestureRecognizers!{
                 if(gesture.isEnabled){
@@ -155,7 +165,27 @@ class ViewController: UIViewController {
         let unit = sender.value
         object.scale = SCNVector3(unit, unit, unit)
     }
-
+    @IBAction func HideControls(_ sender: Any) {
+        RightButton.isHidden = !RightButton.isHidden
+        DownButton.isHidden = !DownButton.isHidden
+        UpButton.isHidden = !UpButton.isHidden
+        LeftButton.isHidden = !LeftButton.isHidden
+        RRightButton.isHidden = !RRightButton.isHidden
+        RLeftButton.isHidden = !RLeftButton.isHidden
+        AwayButton.isHidden = !AwayButton.isHidden
+        CloserButton.isHidden = !CloserButton.isHidden
+        Slider.isHidden = !Slider.isHidden
+        FreeButton.isHidden = !FreeButton.isHidden
+        DebugLabel.isHidden = !DebugLabel.isHidden
+        
+        if(HideControls.currentTitle == "Hide Controls"){
+            HideControls.setTitle("Show Controls", for: UIControl.State.normal)
+        }
+        else{
+            HideControls.setTitle("Hide Controls", for: UIControl.State.normal)
+        }
+    }
+    
     @objc func updateStartingVector(withGestureRecognizer recognizer: UIGestureRecognizer) {
         if(!planeColorHidden){
             let tapLocation = recognizer.location(in: sceneAR)
@@ -210,7 +240,7 @@ class ViewController: UIViewController {
         let scene = SCNScene()
         sceneAR.autoenablesDefaultLighting = true
         sceneAR.allowsCameraControl = false
-                            
+        sceneAR.showsStatistics = true
         sceneAR.scene = scene
     }
     func setupConfiguration() {
@@ -256,16 +286,18 @@ class ViewController: UIViewController {
     var totalX: Int = 0, totalY: Int = 0
     @objc func panGesture(sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: sender.view!)
-        totalX = Int(abs(translation.x))
-        totalY = Int(abs(translation.y))
+        totalX += Int(translation.x)
+        totalY += Int(translation.y)
         
         if(sender.state == UIGestureRecognizer.State.ended) {
-            if(totalX >= totalY){
-                let rotateBy = SCNQuaternion(x: 0, y: 0, z: 0.7071, w: 0.7071)
+            if(abs(totalX) >= abs(totalY)){
+                let mult = totalX > 0 ? -1 : 1
+                let rotateBy = SCNQuaternion(x: 0, y: 0, z: (0.7071), w: (Float(mult) * 0.7071))
                 object.localRotate(by: rotateBy)
             }
             else{
-                let rotateBy = SCNQuaternion(x: 0.7071, y: 0, z: 0, w: 0.7071)
+                let mult = totalY > 0 ? 1 : -1
+                let rotateBy = SCNQuaternion(x: (0.7071), y: 0, z: 0, w: (Float(mult) * 0.7071))
                 object.localRotate(by: rotateBy)
             }
             
