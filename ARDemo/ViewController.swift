@@ -15,58 +15,8 @@ var kMovingLengthPerLoop: CGFloat = 0.05
 let kRotationRadianPerLoop: CGFloat = 0.05
 var planeColorHidden: Bool = false
 
-extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelegate {
-
-    func documentMenu(_ documentMenu: UIDocumentPickerViewController, didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
-        documentPicker.delegate = self
-        documentPicker.allowsMultipleSelection = true
-        self.present(documentPicker, animated: true, completion: nil)
-    }
-
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
-        print("filename: " + url.path.split(separator: "/").last!)
-        print("Rel Path: " + url.relativePath)
-        print("Rel String: " + url.relativeString)
-        print("URL Path: " + url.path)
-        print("Path: " + url.standardizedFileURL.absoluteString)
-               
-        if(!url.path.lowercased().contains(".obj") && !url.path.lowercased().contains(".dae") && !url.path.lowercased().contains(".usdz") && !url.path.lowercased().contains(".usda") && !url.path.lowercased().contains(".usd") && !url.path.lowercased().contains(".usdc") && !url.path.lowercased().contains(".abc") && !url.path.lowercased().contains(".ply") && !url.path.lowercased().contains(".stl") && !url.path.lowercased().contains(".scn") ){
-            print("Multiple files selected")
-            
-            var urlpath = url.deletingLastPathComponent()
-            let fileManager = FileManager.default
-            
-            do{
-            let files = try fileManager.contentsOfDirectory(atPath: urlpath.path)
-                for file in files{
-                    if(file.lowercased().contains(".dae") || file.lowercased().contains(".usdz") || file.lowercased().contains(".usda") || file.lowercased().contains(".usd") || file.lowercased().contains(".usdc") || file.lowercased().contains(".abc") || file.lowercased().contains(".ply") || file.lowercased().contains(".stl") || file.lowercased().contains(".scn") || file.lowercased().contains(".obj"))
-                    {
-                        urlpath.appendPathComponent(file)
-                        print("New URL: ", urlpath.path)
-                    }
-                    addObject(urlpath: urlpath)
-                }
-            }
-            catch{
-                print("file error")
-            }
-            
-        }
-        else{
-            addObject(urlpath: url)
-        }
-
-    }
-
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        dismiss(animated: true, completion: nil)
-    }
-}
-
 class ViewController: UIViewController {
-        
-    let documentInteractionController = UIDocumentInteractionController()
-    
+            
     enum Options: String{
         case cyberTruck = "Tesla CyberTruck"
         case animal = "Dog"
@@ -97,7 +47,6 @@ class ViewController: UIViewController {
         case .formula:
             path = Objects.Formula
         case .custom:
-            
             let types: [String] = [kUTTypeItem as String]
             let importMenu = UIDocumentPickerViewController(documentTypes: types, in: .import)
             importMenu.delegate = self
@@ -105,6 +54,7 @@ class ViewController: UIViewController {
             importMenu.allowsMultipleSelection = true
             present(importMenu, animated: false, completion: nil)
         }
+        
         addObject(path: path)
         SelectObjectButton(sender)
     }
@@ -185,10 +135,19 @@ class ViewController: UIViewController {
         if(sceneAR.allowsCameraControl)
         {
             sceneAR.scene = sceneAR.scene
-            sender.setTitle("Allow Frre Float", for: UIControl.State.normal)
+            sender.setTitle("Allow Free Float", for: UIControl.State.normal)
+            let panRecognizer = UIPanGestureRecognizer(target: self, action:(#selector(self.panGesture(sender:))))
+            sceneAR.addGestureRecognizer(panRecognizer)
         }
         else{
             sender.setTitle("Reset to Fixed", for: UIControl.State.normal)
+            for gesture in sceneAR.gestureRecognizers!{
+                if(gesture.isEnabled){
+                    if(gesture.isKind(of: UIPanGestureRecognizer.self)){
+                        sceneAR.removeGestureRecognizer(gesture)
+                    }
+                }
+            }
         }
         sceneAR.allowsCameraControl = !sceneAR.allowsCameraControl
     }
@@ -198,31 +157,30 @@ class ViewController: UIViewController {
     }
 
     @objc func updateStartingVector(withGestureRecognizer recognizer: UIGestureRecognizer) {
-        let tapLocation = recognizer.location(in: sceneAR)
-        let hitTestResults = sceneAR.hitTest(tapLocation, types: .existingPlaneUsingExtent)
-        
-        guard let hitTestResult = hitTestResults.first else { return }
-        let translation = hitTestResult.worldTransform.columns.3
-        let x = translation.x
-        let y = translation.y
-        let z = translation.z
-        
-        addPosition = SCNVector3(x,y,z)
-        planeColorHidden = true
-        
-        for child in sceneAR.scene.rootNode.childNodes{
-            if(child.name == "plane"){
-                child.isHidden = planeColorHidden
+        if(!planeColorHidden){
+            let tapLocation = recognizer.location(in: sceneAR)
+            let hitTestResults = sceneAR.hitTest(tapLocation, types: .existingPlaneUsingExtent)
+            
+            guard let hitTestResult = hitTestResults.first else { return }
+            let translation = hitTestResult.worldTransform.columns.3
+            let x = translation.x
+            let y = translation.y
+            let z = translation.z
+            
+            addPosition = SCNVector3(x,y,z)
+            planeColorHidden = true
+            
+            for child in sceneAR.scene.rootNode.childNodes{
+                if(child.name == "plane"){
+                    child.isHidden = planeColorHidden
+                }
             }
+            
+            print("Plane Selected")
         }
-        
-        print("Plane Selected")
     }
     
     var object = Objects()
-    
-    var geometryNode: SCNNode = SCNNode()
-    var currentAngle: Float = 0.0
     var addPosition: SCNVector3 = SCNVector3(0,0,0)
     
     override func viewDidLoad() {
@@ -252,6 +210,7 @@ class ViewController: UIViewController {
         let scene = SCNScene()
         sceneAR.autoenablesDefaultLighting = true
         sceneAR.allowsCameraControl = false
+                            
         sceneAR.scene = scene
     }
     func setupConfiguration() {
@@ -267,6 +226,10 @@ class ViewController: UIViewController {
         object.loadModel(filename: path)
         object.position = addPosition
         object.rotation = SCNVector4Zero
+        
+        let panRecognizer = UIPanGestureRecognizer(target: self, action:(#selector(self.panGesture(sender:))))
+        sceneAR.addGestureRecognizer(panRecognizer)
+        
         sceneAR.scene.rootNode.addChildNode(object)
         SliderChanged(Slider)
     }
@@ -277,6 +240,10 @@ class ViewController: UIViewController {
         object.loadModel(urlname: urlpath)
         object.position = addPosition
         object.rotation = SCNVector4Zero
+        
+        let panRecognizer = UIPanGestureRecognizer(target: self, action:(#selector(self.panGesture(sender:))))
+        sceneAR.addGestureRecognizer(panRecognizer)
+        
         sceneAR.scene.rootNode.addChildNode(object)
         SliderChanged(Slider)
     }
@@ -285,79 +252,45 @@ class ViewController: UIViewController {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.updateStartingVector(withGestureRecognizer:)))
         sceneAR.addGestureRecognizer(tapGestureRecognizer)
     }
-    private func moveObject(x: CGFloat, z: CGFloat, sender: Any) {
+    
+    var totalX: Int = 0, totalY: Int = 0
+    @objc func panGesture(sender: UIPanGestureRecognizer) {
+        let translation = sender.translation(in: sender.view!)
+        totalX = Int(abs(translation.x))
+        totalY = Int(abs(translation.y))
+        
+        if(sender.state == UIGestureRecognizer.State.ended) {
+            if(totalX >= totalY){
+                let rotateBy = SCNQuaternion(x: 0, y: 0, z: 0.7071, w: 0.7071)
+                object.localRotate(by: rotateBy)
+            }
+            else{
+                let rotateBy = SCNQuaternion(x: 0.7071, y: 0, z: 0, w: 0.7071)
+                object.localRotate(by: rotateBy)
+            }
+            
+            totalX = 0
+            totalY = 0
+        }
+    }
+    
+    func moveObject(x: CGFloat, z: CGFloat, sender: Any) {
         let action = SCNAction.moveBy(x: x, y: 0, z: z, duration: kAnimationDurationMoving)
         execute(action: action, sender: sender)
     }
     
-    private func deltas() -> (sin: CGFloat, cos: CGFloat) {
+    func deltas() -> (sin: CGFloat, cos: CGFloat) {
         return (sin: kMovingLengthPerLoop * CGFloat(sin(object.eulerAngles.y)), cos: kMovingLengthPerLoop * CGFloat(cos(object.eulerAngles.y)))
     }
     
-    private func rotateObject(yRadian: CGFloat, sender: Any) {
+    func rotateObject(yRadian: CGFloat, sender: Any) {
         let action = SCNAction.rotateBy(x: 0, y: yRadian, z: 0, duration: kAnimationDurationMoving)
         execute(action: action, sender: sender)
     }
     
-    private func execute(action: SCNAction, sender: Any) {
+    func execute(action: SCNAction, sender: Any) {
         let loopAction = SCNAction.repeat(action, count: 6)
         object.runAction(loopAction)
     }
-}
-extension ViewController: ARSCNViewDelegate {
-     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-      // 1
-      guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-      
-      // 2
-      let width = CGFloat(planeAnchor.extent.x)
-      let height = CGFloat(planeAnchor.extent.z)
-      let plane = SCNPlane(width: width, height: height)
-      
-      // 3
-        plane.materials.first?.diffuse.contents = UIColor.transparentDeveloperColor
-      
-      // 4
-      let planeNode = SCNNode(geometry: plane)
-      
-      // 5
-      let x = CGFloat(planeAnchor.center.x)
-      let y = CGFloat(planeAnchor.center.y)
-      let z = CGFloat(planeAnchor.center.z)
-      planeNode.position = SCNVector3(x,y,z)
-      planeNode.eulerAngles.x = -.pi / 2
-
-        node.isHidden = planeColorHidden
-      // 6
-      node.addChildNode(planeNode)
-        node.name = "plane"
-        sceneAR.scene.rootNode.addChildNode(node)
-        
-    }
-    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        // 1
-         guard let planeAnchor = anchor as?  ARPlaneAnchor,
-             let planeNode = node.childNodes.first,
-             let plane = planeNode.geometry as? SCNPlane
-             else { return }
-      
-         // 2
-         let width = CGFloat(planeAnchor.extent.x)
-         let height = CGFloat(planeAnchor.extent.z)
-         plane.width = width
-         plane.height = height
-                  
-         // 3
-         let x = CGFloat(planeAnchor.center.x)
-         let y = CGFloat(planeAnchor.center.y)
-         let z = CGFloat(planeAnchor.center.z)
-         planeNode.position = SCNVector3(x, y, z)
-    }
-}
-extension UIColor {
-    open class var transparentDeveloperColor: UIColor {
-        return UIColor(red: 0/255, green: 102/255, blue: 255/255, alpha: 0.65)
-    }
-
 }
 
