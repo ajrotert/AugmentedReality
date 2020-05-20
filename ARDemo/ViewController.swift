@@ -146,8 +146,8 @@ class ViewController: UIViewController {
         {
             sceneAR.scene = sceneAR.scene
             sender.setTitle("Allow Free Float", for: UIControl.State.normal)
-            let panRecognizer = UIPanGestureRecognizer(target: self, action:(#selector(self.panGesture(sender:))))
-            sceneAR.addGestureRecognizer(panRecognizer)
+            addGesturesToSceneView(tap: false, pan: true, pinch: true)
+            OptionsStack.isHidden = false
         }
         else{
             sceneAR.scene.background.contents = UIImage(named: "Background")
@@ -157,17 +157,21 @@ class ViewController: UIViewController {
                     if(gesture.isKind(of: UIPanGestureRecognizer.self)){
                         sceneAR.removeGestureRecognizer(gesture)
                     }
+                    else if(gesture.isKind(of: UIPinchGestureRecognizer.self)){
+                        sceneAR.removeGestureRecognizer(gesture)
+                    }
                 }
             }
             let text = "Tap to lock\nposition"
             PlaceHolderLabel.text = text
             PlaceHolderLabel.isHidden = false
+            OptionsStack.isHidden = true
         }
         sceneAR.allowsCameraControl = !sceneAR.allowsCameraControl
     }
     @IBAction func SliderChanged(_ sender: UISlider) {
-        let unit = sender.value
-        object.scale = SCNVector3(unit, unit, unit)
+        //let unit = sender.value
+        //object.scale = SCNVector3(unit, unit, unit)
     }
     @IBAction func LightClicked(_ sender: Any) {
         sceneAR.automaticallyUpdatesLighting = !sceneAR.automaticallyUpdatesLighting
@@ -239,7 +243,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCoachingOverlay()
-        addTapGestureToSceneView()
+        addGesturesToSceneView(tap: true, pan: true, pinch: true)
         setupScene()
         // Do any additional setup after loading the view.
     }
@@ -274,7 +278,7 @@ class ViewController: UIViewController {
             configuration.environmentTexturing = .automatic
         }
         configuration.isLightEstimationEnabled = true
-        sceneAR.automaticallyUpdatesLighting = true
+        sceneAR.automaticallyUpdatesLighting = false
         sceneAR.delegate = self
         sceneAR.session.run(configuration)
     }
@@ -285,12 +289,9 @@ class ViewController: UIViewController {
         object.loadModel(filename: path)
         object.position = addPosition
         object.rotation = SCNVector4Zero
-        
-        let panRecognizer = UIPanGestureRecognizer(target: self, action:(#selector(self.panGesture(sender:))))
-        sceneAR.addGestureRecognizer(panRecognizer)
-        
+        let box = [abs(object.boundingBox.max.x), abs(object.boundingBox.max.y), abs(object.boundingBox.max.z), abs(object.boundingBox.min.x), abs(object.boundingBox.min.y), abs(object.boundingBox.min.z)]
+        scaleObject(unit: box.max()!)
         sceneAR.scene.rootNode.addChildNode(object)
-        SliderChanged(Slider)
     }
     func addObject(urlpath: URL) {
         print("addObject 2")
@@ -299,12 +300,9 @@ class ViewController: UIViewController {
         object.loadModel(urlname: urlpath)
         object.position = addPosition
         object.rotation = SCNVector4Zero
-        
-        let panRecognizer = UIPanGestureRecognizer(target: self, action:(#selector(self.panGesture(sender:))))
-        sceneAR.addGestureRecognizer(panRecognizer)
-        
+        let box = [abs(object.boundingBox.max.x), abs(object.boundingBox.max.y), abs(object.boundingBox.max.z), abs(object.boundingBox.min.x), abs(object.boundingBox.min.y), abs(object.boundingBox.min.z)]
+        scaleObject(unit: box.max()!)
         sceneAR.scene.rootNode.addChildNode(object)
-        SliderChanged(Slider)
     }
     func hideUserInterfaceObjects(val: Bool){
         RightButton.isHidden = val
@@ -324,9 +322,22 @@ class ViewController: UIViewController {
         HideControls.isHidden = val
     }
 
-    func addTapGestureToSceneView() {
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.updateStartingVector(withGestureRecognizer:)))
-        sceneAR.addGestureRecognizer(tapGestureRecognizer)
+    func addGesturesToSceneView(tap: Bool, pan: Bool, pinch: Bool) {
+        if(tap){
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.updateStartingVector(withGestureRecognizer:)))
+            sceneAR.addGestureRecognizer(tapGestureRecognizer)
+        }
+        
+        if(pan){
+            let panRecognizer = UIPanGestureRecognizer(target: self, action:(#selector(self.panGesture(sender:))))
+            sceneAR.addGestureRecognizer(panRecognizer)
+        }
+        
+        if(pinch){
+            let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:(#selector(self.pinchGesture(sender:))))
+            sceneAR.addGestureRecognizer(pinchRecognizer)
+        }
+        
     }
     
     var totalX: Int = 0, totalY: Int = 0
@@ -352,6 +363,17 @@ class ViewController: UIViewController {
         }
     }
     
+    @objc func pinchGesture(sender: UIPinchGestureRecognizer){
+        if(sender.state == .began || sender.state == .changed){
+            let scaler = Float(object.scale.x) * Float(sender.scale)
+            object.scale = SCNVector3(scaler, scaler, scaler)
+            sender.scale = 1.0
+        }
+    }
+
+    func scaleObject(unit: Float){
+        object.scale = SCNVector3(1/(unit * 1.5), 1/(unit * 1.5), 1/(unit * 1.5))
+    }
     func moveObject(x: CGFloat, z: CGFloat, sender: Any) {
         let action = SCNAction.moveBy(x: x, y: 0, z: z, duration: kAnimationDurationMoving)
         execute(action: action, sender: sender)

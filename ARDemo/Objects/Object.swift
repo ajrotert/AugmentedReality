@@ -39,7 +39,7 @@ class Objects: SCNNode{
                 if(child.geometry?.materials.count == 1){
                     child.geometry?.materials.first?.diffuse.contents = UIColor.darkGray
                     child.geometry?.materials.first?.diffuse.intensity = CGFloat(3)
-                    child.geometry?.materials.first?.metalness.intensity = CGFloat(5)
+                    child.geometry?.materials.first?.metalness.intensity = CGFloat(0.5)
                     child.geometry?.materials.first?.roughness.intensity = CGFloat(0.5)
                 }
                 else{
