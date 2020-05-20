@@ -8,6 +8,7 @@
 
 import ARKit
 import UIKit
+import SceneKit
 import MobileCoreServices
 
 let kAnimationDurationMoving: TimeInterval = 0.2
@@ -81,6 +82,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var Slider: UISlider!
     @IBOutlet weak var DebugLabel: UIButton!
     @IBOutlet weak var HideControls: UIButton!
+    @IBOutlet weak var LightButton: UIButton!
+    @IBOutlet weak var OptionsStack: UIStackView!
+    @IBOutlet weak var PlaceHolderLabel: UILabel!
     
     @IBAction func Debug(_ sender: Any) {
         let fileManager = FileManager.default
@@ -91,18 +95,15 @@ class ViewController: UIViewController {
             }
         }
         catch{
-            print("file deletion error")
+            print("files error")
         }
         
-        let label = DebugLabel.currentTitle
-        if(label == "Show Physics")
+        if(sceneAR.debugOptions.contains(.renderAsWireframe))
         {
-            sceneAR.debugOptions = [.renderAsWireframe, .showBoundingBoxes, .showFeaturePoints, .showPhysicsFields, .showPhysicsShapes]
-            DebugLabel.setTitle("Hide Physics", for: UIControl.State.normal)
+            sceneAR.debugOptions = []
         }
         else{
-            sceneAR.debugOptions = []
-            DebugLabel.setTitle("Show Physics", for: UIControl.State.normal)
+            sceneAR.debugOptions = [.renderAsWireframe, .showBoundingBoxes, .showFeaturePoints, .showPhysicsFields, .showPhysicsShapes]
         }
     }
     @IBAction func Up(_ sender: Any) {
@@ -158,6 +159,9 @@ class ViewController: UIViewController {
                     }
                 }
             }
+            let text = "Tap to lock\nposition"
+            PlaceHolderLabel.text = text
+            PlaceHolderLabel.isHidden = false
         }
         sceneAR.allowsCameraControl = !sceneAR.allowsCameraControl
     }
@@ -165,6 +169,18 @@ class ViewController: UIViewController {
         let unit = sender.value
         object.scale = SCNVector3(unit, unit, unit)
     }
+    @IBAction func LightClicked(_ sender: Any) {
+        sceneAR.automaticallyUpdatesLighting = !sceneAR.automaticallyUpdatesLighting
+        if(sceneAR.automaticallyUpdatesLighting){
+            let img = UIImage(systemName: "lightbulb")
+            LightButton.setImage(img, for: UIControl.State.normal)
+        }
+        else{
+            let img = UIImage(systemName: "lightbulb.fill")
+            LightButton.setImage(img, for: UIControl.State.normal)
+        }
+    }
+
     @IBAction func HideControls(_ sender: Any) {
         RightButton.isHidden = !RightButton.isHidden
         DownButton.isHidden = !DownButton.isHidden
@@ -177,6 +193,7 @@ class ViewController: UIViewController {
         Slider.isHidden = !Slider.isHidden
         FreeButton.isHidden = !FreeButton.isHidden
         DebugLabel.isHidden = !DebugLabel.isHidden
+        LightButton.isHidden = !LightButton.isHidden
         
         if(HideControls.currentTitle == "Hide Controls"){
             HideControls.setTitle("Show Controls", for: UIControl.State.normal)
@@ -207,14 +224,21 @@ class ViewController: UIViewController {
             }
             
             print("Plane Selected")
+            hideUserInterfaceObjects(val: false)
+            PlaceHolderLabel.isHidden = true
+        }
+        else if(!PlaceHolderLabel.isHidden){
+            PlaceHolderLabel.isHidden = true
         }
     }
     
     var object = Objects()
     var addPosition: SCNVector3 = SCNVector3(0,0,0)
+    let coachingOverlay = ARCoachingOverlayView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupCoachingOverlay()
         addTapGestureToSceneView()
         setupScene()
         // Do any additional setup after loading the view.
@@ -246,6 +270,11 @@ class ViewController: UIViewController {
     func setupConfiguration() {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
+        if #available(iOS 12.0, *) {
+            configuration.environmentTexturing = .automatic
+        }
+        configuration.isLightEstimationEnabled = true
+        sceneAR.automaticallyUpdatesLighting = true
         sceneAR.delegate = self
         sceneAR.session.run(configuration)
     }
@@ -276,6 +305,23 @@ class ViewController: UIViewController {
         
         sceneAR.scene.rootNode.addChildNode(object)
         SliderChanged(Slider)
+    }
+    func hideUserInterfaceObjects(val: Bool){
+        RightButton.isHidden = val
+        DownButton.isHidden = val
+        UpButton.isHidden = val
+        LeftButton.isHidden = val
+        RRightButton.isHidden = val
+        RLeftButton.isHidden = val
+        AwayButton.isHidden = val
+        CloserButton.isHidden = val
+        Slider.isHidden = val
+        FreeButton.isHidden = val
+        DebugLabel.isHidden = val
+        LightButton.isHidden = val
+        OptionsStack.isHidden = val
+        DebugLabel.isHidden = val
+        HideControls.isHidden = val
     }
 
     func addTapGestureToSceneView() {
