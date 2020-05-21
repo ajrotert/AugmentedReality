@@ -24,6 +24,13 @@ class ViewController: UIViewController {
         case formula = "Formula One"
         case custom = "Use Your Own"
     }
+    public static var StaticViewController: ViewController = ViewController()
+    public func showMessage(message: String){
+        let alert = UIAlertController(title: "A Error Occured", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Reset Model", style: .destructive, handler: nil))
+
+        self.present(alert, animated: true)
+    }
     
     @IBOutlet var MenuOptions: [UIButton]!
     @IBOutlet weak var SelectOptions: UIButton!
@@ -79,7 +86,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var RRightButton: UIButton!
     @IBOutlet weak var CloserButton: UIButton!
     @IBOutlet weak var FreeButton: UIButton!
-    @IBOutlet weak var Slider: UISlider!
     @IBOutlet weak var DebugLabel: UIButton!
     @IBOutlet weak var HideControls: UIButton!
     @IBOutlet weak var LightButton: UIButton!
@@ -169,10 +175,7 @@ class ViewController: UIViewController {
         }
         sceneAR.allowsCameraControl = !sceneAR.allowsCameraControl
     }
-    @IBAction func SliderChanged(_ sender: UISlider) {
-        //let unit = sender.value
-        //object.scale = SCNVector3(unit, unit, unit)
-    }
+
     @IBAction func LightClicked(_ sender: Any) {
         sceneAR.automaticallyUpdatesLighting = !sceneAR.automaticallyUpdatesLighting
         if(sceneAR.automaticallyUpdatesLighting){
@@ -194,7 +197,6 @@ class ViewController: UIViewController {
         RLeftButton.isHidden = !RLeftButton.isHidden
         AwayButton.isHidden = !AwayButton.isHidden
         CloserButton.isHidden = !CloserButton.isHidden
-        Slider.isHidden = !Slider.isHidden
         FreeButton.isHidden = !FreeButton.isHidden
         DebugLabel.isHidden = !DebugLabel.isHidden
         LightButton.isHidden = !LightButton.isHidden
@@ -242,6 +244,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ViewController.StaticViewController = self
         setupCoachingOverlay()
         addGesturesToSceneView(tap: true, pan: true, pinch: true)
         setupScene()
@@ -313,7 +316,6 @@ class ViewController: UIViewController {
         RLeftButton.isHidden = val
         AwayButton.isHidden = val
         CloserButton.isHidden = val
-        Slider.isHidden = val
         FreeButton.isHidden = val
         DebugLabel.isHidden = val
         LightButton.isHidden = val
@@ -372,7 +374,7 @@ class ViewController: UIViewController {
     }
 
     func scaleObject(unit: Float){
-        object.scale = SCNVector3(1/(unit * 1.5), 1/(unit * 1.5), 1/(unit * 1.5))
+        object.scale = SCNVector3(1/(unit + 75), 1/(unit + 75), 1/(unit + 75))
     }
     func moveObject(x: CGFloat, z: CGFloat, sender: Any) {
         let action = SCNAction.moveBy(x: x, y: 0, z: z, duration: kAnimationDurationMoving)

@@ -7,6 +7,7 @@
 //
 
 import ARKit
+import SceneKit
 
 class Objects: SCNNode{
     
@@ -33,28 +34,38 @@ class Objects: SCNNode{
         
         do{
             let virtualObjectScene = try SCNScene(url: urlname)
-            let wrapperNode = SCNNode()
-            for child in virtualObjectScene.rootNode.childNodes{
-                
-                if(child.geometry?.materials.count == 1){
-                    child.geometry?.materials.first?.diffuse.contents = UIColor.darkGray
-                    child.geometry?.materials.first?.diffuse.intensity = CGFloat(3)
-                    child.geometry?.materials.first?.metalness.intensity = CGFloat(0.5)
-                    child.geometry?.materials.first?.roughness.intensity = CGFloat(0.5)
-                }
-                else{
-                    print("Materials: ", child.geometry?.materials.count ?? "cannot determine")
-                }
-                
-                wrapperNode.addChildNode(child)
+            if(virtualObjectScene.rootNode.childNodes.count == 0){
+                let message = "(Filestream Error): Error processing file. Try a differnt file type, or fix the filestream."
+                print(message)
+                ViewController.StaticViewController.showMessage(message: message)
             }
-            print("Model Loaded Ending")
-            
-            wrapperNode.castsShadow = true
-            addChildNode(wrapperNode)
+            else{
+                let wrapperNode = SCNNode()
+                for child in virtualObjectScene.rootNode.childNodes{
+                    
+                    if(child.geometry?.materials.count == 1){
+                        child.geometry?.materials.first?.diffuse.contents = UIColor.darkGray
+                        child.geometry?.materials.first?.diffuse.intensity = CGFloat(3)
+                        child.geometry?.materials.first?.metalness.intensity = CGFloat(0.5)
+                        child.geometry?.materials.first?.roughness.intensity = CGFloat(0.5)
+                    }
+                    else{
+                        print("Materials: ", child.geometry?.materials.count ?? "cannot determine")
+                    }
+                    
+                    wrapperNode.addChildNode(child)
+                }
+                print("Model Loaded Ending")
+                
+                wrapperNode.castsShadow = true
+                addChildNode(wrapperNode)
+            }
         }
         catch{
-            print("Model Loading Error")
+            let message = "(Rendering Error): File type is not supported."
+            print(message)
+            ViewController.StaticViewController.showMessage(message: message)
+
         }
         
     }

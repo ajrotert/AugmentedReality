@@ -33,7 +33,7 @@ extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelega
                 }
             }
             catch{
-                print("file error")
+                print("File Selection Error: \(error)")
             }
             
         }

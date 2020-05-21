@@ -198,12 +198,6 @@
                                     <action selector="ResizeClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="v3Q-fJ-634"/>
                                 </connections>
                             </button>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.01" minValue="0.0" maxValue="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="a1p-h2-IJp">
-                                <rect key="frame" x="148" y="701" width="118" height="31"/>
-                                <connections>
-                                    <action selector="SliderChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="b80-CJ-gPB"/>
-                                </connections>
-                            </slider>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LGA-uw-bML">
                                 <rect key="frame" x="138" y="856" width="138" height="30"/>
                                 <state key="normal" title="Hide Controls"/>
@@ -213,7 +207,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sIu-9Z-336">
                                 <rect key="frame" x="291" y="745" width="36" height="40"/>
-                                <state key="normal" image="lightbulb" catalog="system"/>
+                                <state key="normal" image="lightbulb.fill" catalog="system"/>
                                 <connections>
                                     <action selector="LightClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="B7N-kP-obv"/>
                                 </connections>
@@ -256,7 +250,6 @@
                             <constraint firstItem="y9i-Qf-9ao" firstAttribute="top" secondItem="CEx-eY-4C6" secondAttribute="bottom" constant="162.5" id="Sdg-5K-RdI"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="CEx-eY-4C6" secondAttribute="trailing" constant="20" id="Th5-ZU-CG7"/>
                             <constraint firstItem="sIu-9Z-336" firstAttribute="leading" secondItem="6VN-xZ-9Gf" secondAttribute="trailing" constant="15" id="UMz-Z9-C5C"/>
-                            <constraint firstItem="Isl-Sk-94B" firstAttribute="leading" secondItem="a1p-h2-IJp" secondAttribute="trailing" constant="20" id="V54-KI-8e3"/>
                             <constraint firstItem="Isl-Sk-94B" firstAttribute="top" secondItem="sIu-9Z-336" secondAttribute="bottom" constant="3.5" id="WvK-yQ-X5H"/>
                             <constraint firstItem="Isl-Sk-94B" firstAttribute="leading" secondItem="gHe-Jx-KQr" secondAttribute="trailing" constant="8" id="YDJ-4w-kFi"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="xJh-vf-utt" secondAttribute="trailing" id="aCc-Wn-ugP"/>
@@ -268,14 +261,12 @@
                             <constraint firstItem="8Kl-jE-dhY" firstAttribute="leading" secondItem="TzT-i5-xCB" secondAttribute="trailing" constant="10" id="ey7-rg-nmF"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Isl-Sk-94B" secondAttribute="bottom" constant="21.5" id="gcI-E3-CD1"/>
                             <constraint firstItem="LGA-uw-bML" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="138" id="h7L-Bx-cCZ"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="a1p-h2-IJp" secondAttribute="bottom" constant="131" id="jiX-mx-M1a"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="LGA-uw-bML" secondAttribute="trailing" constant="138" id="lbB-5Q-lM4"/>
                             <constraint firstItem="xJh-vf-utt" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="o9L-jS-khR"/>
                             <constraint firstItem="Isl-Sk-94B" firstAttribute="top" secondItem="y9i-Qf-9ao" secondAttribute="bottom" constant="46" id="oTA-eq-63l"/>
                             <constraint firstItem="Qt4-d1-PvU" firstAttribute="leading" secondItem="wtg-Yk-9pa" secondAttribute="trailing" constant="8" id="piB-Y6-0fG"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="8Kl-jE-dhY" secondAttribute="bottom" constant="69.5" id="r2A-4c-vRY"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Isl-Sk-94B" secondAttribute="bottom" constant="21.5" id="rIp-gg-TA2"/>
-                            <constraint firstItem="a1p-h2-IJp" firstAttribute="centerX" secondItem="gHe-Jx-KQr" secondAttribute="centerX" id="ujt-Td-VEP"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="wtg-Yk-9pa" secondAttribute="bottom" constant="69.5" id="vez-t2-MyZ"/>
                             <constraint firstItem="xnX-rc-Efh" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="xi7-pB-PuF"/>
                             <constraint firstItem="wF2-e2-9CJ" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" constant="-20" id="zcm-nH-2sC"/>
@@ -297,7 +288,6 @@
                         <outlet property="RRightButton" destination="8Kl-jE-dhY" id="9Kg-Mg-oqr"/>
                         <outlet property="RightButton" destination="sQe-fx-k9v" id="x4G-pt-gFB"/>
                         <outlet property="SelectOptions" destination="2tW-ys-msa" id="ezo-hh-HDi"/>
-                        <outlet property="Slider" destination="a1p-h2-IJp" id="6aZ-Yn-9jH"/>
                         <outlet property="UpButton" destination="y9i-Qf-9ao" id="Sw4-FX-7mV"/>
                         <outlet property="sceneAR" destination="xnX-rc-Efh" id="vTT-6c-scF"/>
                         <outletCollection property="MenuOptions" destination="MGL-tR-cvI" collectionClass="NSMutableArray" id="7vI-BS-KtP"/>
@@ -317,6 +307,6 @@
         <image name="arrow.right" catalog="system" width="128" height="98"/>
         <image name="arrow.up" catalog="system" width="120" height="128"/>
         <image name="globe" catalog="system" width="128" height="121"/>
-        <image name="lightbulb" catalog="system" width="113" height="128"/>
+        <image name="lightbulb.fill" catalog="system" width="113" height="128"/>
     </resources>
 </document>
