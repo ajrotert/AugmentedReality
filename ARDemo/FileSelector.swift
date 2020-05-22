@@ -14,7 +14,7 @@ extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelega
         print("Rel String: " + url.relativeString)
         print("URL Path: " + url.path)
         print("Path: " + url.standardizedFileURL.absoluteString)
-               
+        
         if(!url.path.lowercased().contains(".obj") && !url.path.lowercased().contains(".dae") && !url.path.lowercased().contains(".usdz") && !url.path.lowercased().contains(".usda") && !url.path.lowercased().contains(".usd") && !url.path.lowercased().contains(".usdc") && !url.path.lowercased().contains(".abc") && !url.path.lowercased().contains(".ply") && !url.path.lowercased().contains(".stl") && !url.path.lowercased().contains(".scn") ){
             print("Multiple files selected")
             
@@ -44,6 +44,7 @@ extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelega
     }
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        hidePlaceholder(isHidden: true)
         dismiss(animated: true, completion: nil)
     }
 }

@@ -27,9 +27,25 @@ class ViewController: UIViewController {
     public static var StaticViewController: ViewController = ViewController()
     public func showMessage(message: String){
         let alert = UIAlertController(title: "A Error Occured", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Reset Model", style: .destructive, handler: nil))
+        alert.addAction(UIAlertAction(title: "Continue", style: .default, handler: nil))
 
         self.present(alert, animated: true)
+    }
+    public func showPlaceholder(message: String, animate: Bool){
+        PlaceHolderLabel.text = message
+        PlaceHolderLabel.isHidden = false
+        
+        if(animate){
+            UIView.animate(withDuration: 5, animations: {
+                self.PlaceHolderLabel.alpha = 0
+            }) { (finished) in
+                self.PlaceHolderLabel.alpha = 1
+                self.PlaceHolderLabel.isHidden = true
+            }
+        }
+    }
+    public func hidePlaceholder(isHidden: Bool){
+        PlaceHolderLabel.isHidden = isHidden
     }
     
     @IBOutlet var MenuOptions: [UIButton]!
@@ -42,6 +58,8 @@ class ViewController: UIViewController {
                 self.view.layoutIfNeeded()
             })
         }
+        
+        hideUserInterfaceObjects(val: false, all: false)
     }
     @IBAction func ObjectClicked(_ sender: UIButton) {
         guard let title = sender.currentTitle, let option = Options(rawValue: title) else { return }
@@ -54,14 +72,20 @@ class ViewController: UIViewController {
             print("file deletion error")
         }
         
+        let starting_message = "Model loading from file..."
+        showPlaceholder(message: starting_message, animate: false)
+        
         var path = ""
         switch option{
         case .cyberTruck:
             path = Objects.CyberTruckPath
+            addObject(path: path)
         case .animal:
             path = Objects.Animal
+            addObject(path: path)
         case .formula:
             path = Objects.Formula
+            addObject(path: path)
         case .custom:
             let types: [String] = [kUTTypeItem as String]
             let importMenu = UIDocumentPickerViewController(documentTypes: types, in: .import)
@@ -71,7 +95,6 @@ class ViewController: UIViewController {
             present(importMenu, animated: false, completion: nil)
         }
         
-        addObject(path: path)
         SelectObjectButton(sender)
     }
     
@@ -91,6 +114,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var LightButton: UIButton!
     @IBOutlet weak var OptionsStack: UIStackView!
     @IBOutlet weak var PlaceHolderLabel: UILabel!
+    @IBOutlet weak var InfoButton: UIButton!
+    @IBOutlet weak var RefreshButton: UIButton!
     
     @IBAction func Debug(_ sender: Any) {
         let fileManager = FileManager.default
@@ -152,7 +177,7 @@ class ViewController: UIViewController {
         {
             sceneAR.scene = sceneAR.scene
             sender.setTitle("Allow Free Float", for: UIControl.State.normal)
-            addGesturesToSceneView(tap: false, pan: true, pinch: true)
+            addGesturesToSceneView(tap: false, pan: true, pinch: true, rotation: true)
             OptionsStack.isHidden = false
         }
         else{
@@ -164,6 +189,9 @@ class ViewController: UIViewController {
                         sceneAR.removeGestureRecognizer(gesture)
                     }
                     else if(gesture.isKind(of: UIPinchGestureRecognizer.self)){
+                        sceneAR.removeGestureRecognizer(gesture)
+                    }
+                    else if(gesture.isKind(of: UIRotationGestureRecognizer.self)){
                         sceneAR.removeGestureRecognizer(gesture)
                     }
                 }
@@ -189,24 +217,18 @@ class ViewController: UIViewController {
     }
 
     @IBAction func HideControls(_ sender: Any) {
-        RightButton.isHidden = !RightButton.isHidden
-        DownButton.isHidden = !DownButton.isHidden
-        UpButton.isHidden = !UpButton.isHidden
-        LeftButton.isHidden = !LeftButton.isHidden
-        RRightButton.isHidden = !RRightButton.isHidden
-        RLeftButton.isHidden = !RLeftButton.isHidden
-        AwayButton.isHidden = !AwayButton.isHidden
-        CloserButton.isHidden = !CloserButton.isHidden
-        FreeButton.isHidden = !FreeButton.isHidden
-        DebugLabel.isHidden = !DebugLabel.isHidden
-        LightButton.isHidden = !LightButton.isHidden
         
         if(HideControls.currentTitle == "Hide Controls"){
             HideControls.setTitle("Show Controls", for: UIControl.State.normal)
+            hideUserInterfaceObjects(val: true, all: false)
         }
         else{
             HideControls.setTitle("Hide Controls", for: UIControl.State.normal)
+            hideUserInterfaceObjects(val: false, all: false)
         }
+    }
+    @IBAction func RefreshClicked(_ sender: Any) {
+        print("Restart")
     }
     
     @objc func updateStartingVector(withGestureRecognizer recognizer: UIGestureRecognizer) {
@@ -230,7 +252,8 @@ class ViewController: UIViewController {
             }
             
             print("Plane Selected")
-            hideUserInterfaceObjects(val: false)
+            hideUserInterfaceObjects(val: false, all: true)
+            hideUserInterfaceObjects(val: true, all: false)
             PlaceHolderLabel.isHidden = true
         }
         else if(!PlaceHolderLabel.isHidden){
@@ -246,7 +269,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         ViewController.StaticViewController = self
         setupCoachingOverlay()
-        addGesturesToSceneView(tap: true, pan: true, pinch: true)
+        addGesturesToSceneView(tap: true, pan: true, pinch: true, rotation: true)
         setupScene()
         // Do any additional setup after loading the view.
     }
@@ -307,7 +330,7 @@ class ViewController: UIViewController {
         scaleObject(unit: box.max()!)
         sceneAR.scene.rootNode.addChildNode(object)
     }
-    func hideUserInterfaceObjects(val: Bool){
+    func hideUserInterfaceObjects(val: Bool, all: Bool){
         RightButton.isHidden = val
         DownButton.isHidden = val
         UpButton.isHidden = val
@@ -319,12 +342,16 @@ class ViewController: UIViewController {
         FreeButton.isHidden = val
         DebugLabel.isHidden = val
         LightButton.isHidden = val
-        OptionsStack.isHidden = val
-        DebugLabel.isHidden = val
-        HideControls.isHidden = val
+        if(all){
+            OptionsStack.isHidden = val
+            DebugLabel.isHidden = val
+            HideControls.isHidden = val
+            InfoButton.isHidden = val
+            RefreshButton.isHidden = val
+        }
     }
 
-    func addGesturesToSceneView(tap: Bool, pan: Bool, pinch: Bool) {
+    func addGesturesToSceneView(tap: Bool, pan: Bool, pinch: Bool, rotation: Bool) {
         if(tap){
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.updateStartingVector(withGestureRecognizer:)))
             sceneAR.addGestureRecognizer(tapGestureRecognizer)
@@ -338,6 +365,11 @@ class ViewController: UIViewController {
         if(pinch){
             let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:(#selector(self.pinchGesture(sender:))))
             sceneAR.addGestureRecognizer(pinchRecognizer)
+        }
+        
+        if(rotation){
+            let rotationRecognizer = UIRotationGestureRecognizer(target: self, action: (#selector(self.rotationGesture(sender:))))
+            sceneAR.addGestureRecognizer(rotationRecognizer)
         }
         
     }
@@ -372,9 +404,14 @@ class ViewController: UIViewController {
             sender.scale = 1.0
         }
     }
+    @objc func rotationGesture(sender: UIRotationGestureRecognizer){
+        let rotation = sender.rotation
+        let action = SCNAction.rotateBy(x: 0, y: rotation, z: 0, duration: 0)
+        object.runAction(action)
+    }
 
     func scaleObject(unit: Float){
-        object.scale = SCNVector3(1/(unit + 75), 1/(unit + 75), 1/(unit + 75))
+        object.scale = SCNVector3(1/(unit + 25), 1/(unit + 25), 1/(unit + 25))
     }
     func moveObject(x: CGFloat, z: CGFloat, sender: Any) {
         let action = SCNAction.moveBy(x: x, y: 0, z: z, duration: kAnimationDurationMoving)

@@ -11,7 +11,7 @@ import UIKit
 
 extension ViewController : ARCoachingOverlayViewDelegate{
     func coachingOverlayViewWillActivate(_ coachingOverlayView: ARCoachingOverlayView) {
-        hideUserInterfaceObjects(val: true)
+        hideUserInterfaceObjects(val: true, all: true)
     }
     
     func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
