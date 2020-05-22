@@ -11,6 +11,11 @@ import UIKit
 
 class InsturctionController : UIViewController{
     @IBOutlet weak var PlaceholderLabel: UILabel!
+    @IBOutlet weak var ControlsImage: UIImageView!
+    @IBOutlet weak var CancelButton: UIButton!
+    @IBAction func CancelClicked(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
     
     let helpText = """
 Supported File Types:
@@ -24,6 +29,8 @@ Pinching rescales the model
 
 Tips:
 Objects in a model may render off the view of the camera, rotate the phone around your surroundings to locate objects.
+3D Rendering works best with .obj and .mil files.
+To select multiple files, tap ‘select’ from the files menu, then select all the necessary files
 
 Data:
 Files are deleted after each session.
