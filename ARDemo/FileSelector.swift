@@ -8,6 +8,7 @@ extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelega
         self.present(documentPicker, animated: true, completion: nil)
     }
 
+    //url returned is the last file to be selected by the user. Since multiple files can be selected they are loaded into a temp directory, NSTempDirectory(). If the url returned is not a supported file, we traverse the directory and load the model if a supported file is found. If only one file is selected, or the last file selected is a supported file, then the model is loaded.
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
         print("filename: " + url.path.split(separator: "/").last!)
         print("Rel Path: " + url.relativePath)
@@ -28,12 +29,15 @@ extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelega
                     {
                         urlpath.appendPathComponent(file)
                         print("New URL: ", urlpath.path)
+                        addObject(urlpath: urlpath)
+                        break
                     }
-                    addObject(urlpath: urlpath)
                 }
+                addObject(urlpath: urlpath)
             }
             catch{
                 print("File Selection Error: \(error)")
+                hidePlaceholder(isHidden: true)
             }
             
         }

@@ -63,14 +63,8 @@ class ViewController: UIViewController {
     }
     @IBAction func ObjectClicked(_ sender: UIButton) {
         guard let title = sender.currentTitle, let option = Options(rawValue: title) else { return }
-    
-        let fileManager = FileManager.default
-        do{
-            try fileManager.removeItem(atPath: NSTemporaryDirectory())
-        }
-        catch{
-            print("file deletion error")
-        }
+            
+        deleteTmpDirectory()
         
         let starting_message = "Model loading from file..."
         showPlaceholder(message: starting_message, animate: false)
@@ -179,6 +173,7 @@ class ViewController: UIViewController {
             sender.setTitle("Allow Free Float", for: UIControl.State.normal)
             addGesturesToSceneView(tap: false, pan: true, pinch: true, rotation: true)
             OptionsStack.isHidden = false
+            RefreshButton.isHidden = false
         }
         else{
             sceneAR.scene.background.contents = UIImage(named: "Background")
@@ -200,6 +195,7 @@ class ViewController: UIViewController {
             PlaceHolderLabel.text = text
             PlaceHolderLabel.isHidden = false
             OptionsStack.isHidden = true
+            RefreshButton.isHidden = true
         }
         sceneAR.allowsCameraControl = !sceneAR.allowsCameraControl
     }
@@ -228,7 +224,11 @@ class ViewController: UIViewController {
         }
     }
     @IBAction func RefreshClicked(_ sender: Any) {
-        print("Restart")
+        let alert = UIAlertController(title: "Restart", message: "Restarting will reset the scene, and delete any existing files.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Restart", style: .destructive, handler: {action in self.restartScene()}))
+
+        self.present(alert, animated: true)
     }
     
     @objc func updateStartingVector(withGestureRecognizer recognizer: UIGestureRecognizer) {
@@ -281,15 +281,23 @@ class ViewController: UIViewController {
         super.viewDidDisappear(animated)
         print("App Closed")
         print(NSTemporaryDirectory())
-        let fileManager = FileManager.default
-        do{
-            try fileManager.removeItem(atPath: NSTemporaryDirectory())
-        }
-        catch{
-            print("file deletion error")
-        }
+        deleteTmpDirectory()
     }
-    
+    func restartScene(){
+        print("Restart Session")
+        deleteTmpDirectory()
+        object.removeFromParentNode()
+        planeColorHidden = false
+        hideUserInterfaceObjects(val: true, all: true)
+        PlaceHolderLabel.isHidden = false
+        PlaceHolderLabel.text = "Tap a blue surface\nTo place an object."
+        for child in sceneAR.scene.rootNode.childNodes{
+            if(child.name=="plane"){
+                child.isHidden = false
+            }
+        }
+        
+    }
     func setupScene() {
         let scene = SCNScene()
         sceneAR.autoenablesDefaultLighting = true
@@ -318,6 +326,8 @@ class ViewController: UIViewController {
         let box = [abs(object.boundingBox.max.x), abs(object.boundingBox.max.y), abs(object.boundingBox.max.z), abs(object.boundingBox.min.x), abs(object.boundingBox.min.y), abs(object.boundingBox.min.z)]
         scaleObject(unit: box.max()!)
         sceneAR.scene.rootNode.addChildNode(object)
+        sceneAR.scene.rootNode.camera?.usesOrthographicProjection = true
+        sceneAR.scene.rootNode.camera?.orthographicScale = 0.5
     }
     func addObject(urlpath: URL) {
         print("addObject 2")
@@ -329,6 +339,15 @@ class ViewController: UIViewController {
         let box = [abs(object.boundingBox.max.x), abs(object.boundingBox.max.y), abs(object.boundingBox.max.z), abs(object.boundingBox.min.x), abs(object.boundingBox.min.y), abs(object.boundingBox.min.z)]
         scaleObject(unit: box.max()!)
         sceneAR.scene.rootNode.addChildNode(object)
+    }
+    func deleteTmpDirectory() {
+        let fileManager = FileManager.default
+        do{
+            try fileManager.removeItem(atPath: NSTemporaryDirectory())
+        }
+        catch{
+            print("file deletion error")
+        }
     }
     func hideUserInterfaceObjects(val: Bool, all: Bool){
         RightButton.isHidden = val
