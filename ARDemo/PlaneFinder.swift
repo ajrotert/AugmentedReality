@@ -2,8 +2,10 @@ import UIKit
 import ARKit
 
 extension ViewController: ARSCNViewDelegate {
+    
+    // MARK: Plane Delegates
      func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-
+        //Plane is formed from an anchor. The Planes visability is set based on if the user has seleced a plane or hasn't.
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
 
         let width = CGFloat(planeAnchor.extent.x)
@@ -28,7 +30,7 @@ extension ViewController: ARSCNViewDelegate {
         
     }
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-
+        //Connects planes
         guard let planeAnchor = anchor as?  ARPlaneAnchor,
              let planeNode = node.childNodes.first,
              let plane = planeNode.geometry as? SCNPlane
@@ -46,6 +48,7 @@ extension ViewController: ARSCNViewDelegate {
     }
 }
 extension UIColor {
+    //Add a color to the UIColor class. Used to show a transparent plane.
     open class var transparentDeveloperColor: UIColor {
         return UIColor(red: 0/255, green: 102/255, blue: 255/255, alpha: 0.65)
     }

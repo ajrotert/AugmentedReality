@@ -11,13 +11,19 @@ import UIKit
 import SceneKit
 import MobileCoreServices
 
+
+// MARK: Constant Variables
 let kAnimationDurationMoving: TimeInterval = 0.2
-var kMovingLengthPerLoop: CGFloat = 0.05
+let kMovingLengthPerLoop: CGFloat = 0.05
 let kRotationRadianPerLoop: CGFloat = 0.05
-var planeColorHidden: Bool = false
 
 class ViewController: UIViewController {
             
+    // MARK: ViewController Properties
+    var object = Objects()
+    var addPosition: SCNVector3 = SCNVector3(0,0,0)
+    let coachingOverlay = ARCoachingOverlayView()
+    var planeColorHidden: Bool = false
     enum Options: String{
         case cyberTruck = "Tesla CyberTruck"
         case animal = "Dog"
@@ -25,33 +31,33 @@ class ViewController: UIViewController {
         case custom = "Use Your Own"
     }
     public static var StaticViewController: ViewController = ViewController()
-    public func showMessage(message: String){
-        let alert = UIAlertController(title: "A Error Occured", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Continue", style: .default, handler: nil))
-
-        self.present(alert, animated: true)
-    }
-    public func showPlaceholder(message: String, animate: Bool){
-        PlaceHolderLabel.text = message
-        PlaceHolderLabel.isHidden = false
-        
-        if(animate){
-            UIView.animate(withDuration: 5, animations: {
-                self.PlaceHolderLabel.alpha = 0
-            }) { (finished) in
-                self.PlaceHolderLabel.alpha = 1
-                self.PlaceHolderLabel.isHidden = true
-            }
-        }
-    }
-    public func hidePlaceholder(isHidden: Bool){
-        PlaceHolderLabel.isHidden = isHidden
-    }
     
+    
+    // MARK: User Interface Outlets
     @IBOutlet var MenuOptions: [UIButton]!
     @IBOutlet weak var SelectOptions: UIButton!
+    @IBOutlet weak var sceneAR: ARSCNView!
+    @IBOutlet weak var UpButton: UIButton!
+    @IBOutlet weak var LeftButton: UIButton!
+    @IBOutlet weak var RightButton: UIButton!
+    @IBOutlet weak var DownButton: UIButton!
+    @IBOutlet weak var AwayButton: UIButton!
+    @IBOutlet weak var RLeftButton: UIButton!
+    @IBOutlet weak var RRightButton: UIButton!
+    @IBOutlet weak var CloserButton: UIButton!
+    @IBOutlet weak var FreeButton: UIButton!
+    @IBOutlet weak var DebugLabel: UIButton!
+    @IBOutlet weak var HideControls: UIButton!
+    @IBOutlet weak var LightButton: UIButton!
+    @IBOutlet weak var OptionsStack: UIStackView!
+    @IBOutlet weak var PlaceHolderLabel: UILabel!
+    @IBOutlet weak var InfoButton: UIButton!
+    @IBOutlet weak var RefreshButton: UIButton!
     
+    
+    // MARK: User Interface Actions
     @IBAction func SelectObjectButton(_ sender: UIButton) {
+        //Toggles options for the user
         MenuOptions.forEach{(button) in
             UIView.animate(withDuration: 0.3, animations: {
                 button.isHidden = !button.isHidden
@@ -62,6 +68,7 @@ class ViewController: UIViewController {
         hideUserInterfaceObjects(val: false, all: false)
     }
     @IBAction func ObjectClicked(_ sender: UIButton) {
+        //User can select what model to load into the scene
         guard let title = sender.currentTitle, let option = Options(rawValue: title) else { return }
             
         deleteTmpDirectory()
@@ -91,27 +98,8 @@ class ViewController: UIViewController {
         
         SelectObjectButton(sender)
     }
-    
-    @IBOutlet weak var sceneAR: ARSCNView!
-        
-    @IBOutlet weak var UpButton: UIButton!
-    @IBOutlet weak var LeftButton: UIButton!
-    @IBOutlet weak var RightButton: UIButton!
-    @IBOutlet weak var DownButton: UIButton!
-    @IBOutlet weak var AwayButton: UIButton!
-    @IBOutlet weak var RLeftButton: UIButton!
-    @IBOutlet weak var RRightButton: UIButton!
-    @IBOutlet weak var CloserButton: UIButton!
-    @IBOutlet weak var FreeButton: UIButton!
-    @IBOutlet weak var DebugLabel: UIButton!
-    @IBOutlet weak var HideControls: UIButton!
-    @IBOutlet weak var LightButton: UIButton!
-    @IBOutlet weak var OptionsStack: UIStackView!
-    @IBOutlet weak var PlaceHolderLabel: UILabel!
-    @IBOutlet weak var InfoButton: UIButton!
-    @IBOutlet weak var RefreshButton: UIButton!
-    
     @IBAction func Debug(_ sender: Any) {
+        //User can toggle debug options for an object
         let fileManager = FileManager.default
         do{
             let files = try fileManager.contentsOfDirectory(atPath: NSTemporaryDirectory())
@@ -132,41 +120,49 @@ class ViewController: UIViewController {
         }
     }
     @IBAction func Up(_ sender: Any) {
+        //moves object along z-axis (+)
         let x = deltas().sin
         let z = deltas().cos
         moveObject(x: x, z: z, sender: sender)
     }
     @IBAction func Left(_ sender: Any) {
+        //moves object along x-axis (-)
         let x = -deltas().cos
         let z = deltas().sin
         moveObject(x: x, z: z, sender: sender)
     }
     @IBAction func Right(_ sender: Any) {
+        //moves object along x-axis (+)
         let x = deltas().cos
         let z = -deltas().sin
         moveObject(x: x, z: z, sender: sender)
     }
     @IBAction func Down(_ sender: Any) {
+        //moves object along z-axis (-)
         let x = -deltas().sin
         let z = -deltas().cos
         moveObject(x: x, z: z, sender: sender)
     }
-    
     @IBAction func Away(_ sender: Any) {
+        //Moves object along y-axis (+)
         let action = SCNAction.moveBy(x: 0, y: kMovingLengthPerLoop, z: 0, duration: kAnimationDurationMoving)
         execute(action: action, sender: sender)
     }
     @IBAction func RLeft(_ sender: Any) {
+        //Rotates object around y-axis (+)
         rotateObject(yRadian: kRotationRadianPerLoop, sender: sender)
     }
     @IBAction func RRight(_ sender: Any) {
+        //Rotates object around y-axis (-)
         rotateObject(yRadian: -kRotationRadianPerLoop, sender: sender)
     }
     @IBAction func Closer(_ sender: Any) {
+        //Moves object along y-axis (-)
         let action = SCNAction.moveBy(x: 0, y: -kMovingLengthPerLoop, z: 0, duration: kAnimationDurationMoving)
         execute(action: action, sender: sender)
     }
     @IBAction func ResizeClicked(_ sender: UIButton) {
+        //User can view an object with a background, and freely move it
         if(sceneAR.allowsCameraControl)
         {
             sceneAR.scene = sceneAR.scene
@@ -199,8 +195,8 @@ class ViewController: UIViewController {
         }
         sceneAR.allowsCameraControl = !sceneAR.allowsCameraControl
     }
-
     @IBAction func LightClicked(_ sender: Any) {
+        //User can toggle light on and off
         sceneAR.automaticallyUpdatesLighting = !sceneAR.automaticallyUpdatesLighting
         if(sceneAR.automaticallyUpdatesLighting){
             let img = UIImage(systemName: "lightbulb")
@@ -211,9 +207,8 @@ class ViewController: UIViewController {
             LightButton.setImage(img, for: UIControl.State.normal)
         }
     }
-
     @IBAction func HideControls(_ sender: Any) {
-        
+        //User can hide the contorls
         if(HideControls.currentTitle == "Hide Controls"){
             HideControls.setTitle("Show Controls", for: UIControl.State.normal)
             hideUserInterfaceObjects(val: true, all: false)
@@ -224,6 +219,7 @@ class ViewController: UIViewController {
         }
     }
     @IBAction func RefreshClicked(_ sender: Any) {
+        //Confirms the users choice to reset the scene
         let alert = UIAlertController(title: "Restart", message: "Restarting will reset the scene, and delete any existing files.", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         alert.addAction(UIAlertAction(title: "Restart", style: .destructive, handler: {action in self.restartScene()}))
@@ -231,7 +227,133 @@ class ViewController: UIViewController {
         self.present(alert, animated: true)
     }
     
+    
+    // MARK: ViewController Override Functions
+    override func viewDidLoad() {
+        //Sets inital property values
+        super.viewDidLoad()
+        ViewController.StaticViewController = self
+        setupCoachingOverlay()
+        addGesturesToSceneView(tap: true, pan: true, pinch: true, rotation: true)
+        setupScene()
+        // Do any additional setup after loading the view.
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        //Finishes setup on ARSKView
+        super.viewDidAppear(animated)
+        setupConfiguration()
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        //Clears files when user closes app
+        super.viewDidDisappear(animated)
+        print("App Closed")
+        print(NSTemporaryDirectory())
+        deleteTmpDirectory()
+    }
+    
+    
+    // MARK: AR Scene Setup
+    func restartScene(){
+        //Allows user to select a new orgin point. Clear data from scene and files.
+        print("Restart Session")
+        deleteTmpDirectory()
+        object.removeFromParentNode()
+        planeColorHidden = false
+        hideUserInterfaceObjects(val: true, all: true)
+        PlaceHolderLabel.isHidden = false
+        PlaceHolderLabel.text = "Tap a blue surface\nTo place an object."
+        for child in sceneAR.scene.rootNode.childNodes{
+            if(child.name=="plane"){
+                child.isHidden = false
+            }
+        }
+        
+    }
+    func setupScene() {
+        //Defines what AR scene properties are used
+        let scene = SCNScene()
+        sceneAR.autoenablesDefaultLighting = true
+        sceneAR.allowsCameraControl = false
+        sceneAR.showsStatistics = true
+        sceneAR.scene = scene
+    }
+    func setupConfiguration() {
+        //Defines what ARSCView tracks
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = .horizontal
+        if #available(iOS 12.0, *) {
+            configuration.environmentTexturing = .automatic
+        }
+        configuration.isLightEstimationEnabled = true
+        sceneAR.automaticallyUpdatesLighting = false
+        sceneAR.delegate = self
+        sceneAR.session.run(configuration)
+    }
+    
+    
+    // MARK: Scene Object Handling
+    func addObject(path: String) {
+        //Adds object to AR scene if the model is selected from a preloaded file within the apps build files
+        print("addObject")
+        object.removeFromParentNode()
+        object = Objects()
+        object.loadModel(filename: path)
+        object.position = addPosition
+        object.rotation = SCNVector4Zero
+        let box = [abs(object.boundingBox.max.x), abs(object.boundingBox.max.y), abs(object.boundingBox.max.z), abs(object.boundingBox.min.x), abs(object.boundingBox.min.y), abs(object.boundingBox.min.z)]
+        scaleObject(unit: box.max()!)
+        sceneAR.scene.rootNode.addChildNode(object)
+        sceneAR.scene.rootNode.camera?.usesOrthographicProjection = true
+        sceneAR.scene.rootNode.camera?.orthographicScale = 0.5
+    }
+    func addObject(urlpath: URL) {
+        //Adds object to AR scene if the model is loaded from the users custom files
+        print("addObject 2")
+        object.removeFromParentNode()
+        object = Objects()
+        object.loadModel(urlname: urlpath)
+        object.position = addPosition
+        object.rotation = SCNVector4Zero
+        let box = [abs(object.boundingBox.max.x), abs(object.boundingBox.max.y), abs(object.boundingBox.max.z), abs(object.boundingBox.min.x), abs(object.boundingBox.min.y), abs(object.boundingBox.min.z)]
+        scaleObject(unit: box.max()!)
+        sceneAR.scene.rootNode.addChildNode(object)
+    }
+    func deleteTmpDirectory() {
+        //Gets and deletes all files in the apps temporary directory. Files may be stored here if the user uploads their own files.
+        let fileManager = FileManager.default
+        do{
+            try fileManager.removeItem(atPath: NSTemporaryDirectory())
+        }
+        catch{
+            print("file deletion error")
+        }
+    }
+    func hideUserInterfaceObjects(val: Bool, all: Bool){
+        //Sets visable property to lower control group, and optionally all controls
+        RightButton.isHidden = val
+        DownButton.isHidden = val
+        UpButton.isHidden = val
+        LeftButton.isHidden = val
+        RRightButton.isHidden = val
+        RLeftButton.isHidden = val
+        AwayButton.isHidden = val
+        CloserButton.isHidden = val
+        FreeButton.isHidden = val
+        DebugLabel.isHidden = val
+        LightButton.isHidden = val
+        if(all){
+            OptionsStack.isHidden = val
+            DebugLabel.isHidden = val
+            HideControls.isHidden = val
+            InfoButton.isHidden = val
+            RefreshButton.isHidden = val
+        }
+    }
+    
+    
+    // MARK: Gesture Handling
     @objc func updateStartingVector(withGestureRecognizer recognizer: UIGestureRecognizer) {
+        //Tap Gesture, Sets the starting vector to the tapped location. Also controls the center message on the user interface
         if(!planeColorHidden){
             let tapLocation = recognizer.location(in: sceneAR)
             let hitTestResults = sceneAR.hitTest(tapLocation, types: .existingPlaneUsingExtent)
@@ -261,116 +383,8 @@ class ViewController: UIViewController {
         }
     }
     
-    var object = Objects()
-    var addPosition: SCNVector3 = SCNVector3(0,0,0)
-    let coachingOverlay = ARCoachingOverlayView()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        ViewController.StaticViewController = self
-        setupCoachingOverlay()
-        addGesturesToSceneView(tap: true, pan: true, pinch: true, rotation: true)
-        setupScene()
-        // Do any additional setup after loading the view.
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        setupConfiguration()
-    }
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        print("App Closed")
-        print(NSTemporaryDirectory())
-        deleteTmpDirectory()
-    }
-    func restartScene(){
-        print("Restart Session")
-        deleteTmpDirectory()
-        object.removeFromParentNode()
-        planeColorHidden = false
-        hideUserInterfaceObjects(val: true, all: true)
-        PlaceHolderLabel.isHidden = false
-        PlaceHolderLabel.text = "Tap a blue surface\nTo place an object."
-        for child in sceneAR.scene.rootNode.childNodes{
-            if(child.name=="plane"){
-                child.isHidden = false
-            }
-        }
-        
-    }
-    func setupScene() {
-        let scene = SCNScene()
-        sceneAR.autoenablesDefaultLighting = true
-        sceneAR.allowsCameraControl = false
-        sceneAR.showsStatistics = true
-        sceneAR.scene = scene
-    }
-    func setupConfiguration() {
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = .horizontal
-        if #available(iOS 12.0, *) {
-            configuration.environmentTexturing = .automatic
-        }
-        configuration.isLightEstimationEnabled = true
-        sceneAR.automaticallyUpdatesLighting = false
-        sceneAR.delegate = self
-        sceneAR.session.run(configuration)
-    }
-    func addObject(path: String) {
-        print("addObject")
-        object.removeFromParentNode()
-        object = Objects()
-        object.loadModel(filename: path)
-        object.position = addPosition
-        object.rotation = SCNVector4Zero
-        let box = [abs(object.boundingBox.max.x), abs(object.boundingBox.max.y), abs(object.boundingBox.max.z), abs(object.boundingBox.min.x), abs(object.boundingBox.min.y), abs(object.boundingBox.min.z)]
-        scaleObject(unit: box.max()!)
-        sceneAR.scene.rootNode.addChildNode(object)
-        sceneAR.scene.rootNode.camera?.usesOrthographicProjection = true
-        sceneAR.scene.rootNode.camera?.orthographicScale = 0.5
-    }
-    func addObject(urlpath: URL) {
-        print("addObject 2")
-        object.removeFromParentNode()
-        object = Objects()
-        object.loadModel(urlname: urlpath)
-        object.position = addPosition
-        object.rotation = SCNVector4Zero
-        let box = [abs(object.boundingBox.max.x), abs(object.boundingBox.max.y), abs(object.boundingBox.max.z), abs(object.boundingBox.min.x), abs(object.boundingBox.min.y), abs(object.boundingBox.min.z)]
-        scaleObject(unit: box.max()!)
-        sceneAR.scene.rootNode.addChildNode(object)
-    }
-    func deleteTmpDirectory() {
-        let fileManager = FileManager.default
-        do{
-            try fileManager.removeItem(atPath: NSTemporaryDirectory())
-        }
-        catch{
-            print("file deletion error")
-        }
-    }
-    func hideUserInterfaceObjects(val: Bool, all: Bool){
-        RightButton.isHidden = val
-        DownButton.isHidden = val
-        UpButton.isHidden = val
-        LeftButton.isHidden = val
-        RRightButton.isHidden = val
-        RLeftButton.isHidden = val
-        AwayButton.isHidden = val
-        CloserButton.isHidden = val
-        FreeButton.isHidden = val
-        DebugLabel.isHidden = val
-        LightButton.isHidden = val
-        if(all){
-            OptionsStack.isHidden = val
-            DebugLabel.isHidden = val
-            HideControls.isHidden = val
-            InfoButton.isHidden = val
-            RefreshButton.isHidden = val
-        }
-    }
-
     func addGesturesToSceneView(tap: Bool, pan: Bool, pinch: Bool, rotation: Bool) {
+        //Adds specified gestures to the scene
         if(tap){
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.updateStartingVector(withGestureRecognizer:)))
             sceneAR.addGestureRecognizer(tapGestureRecognizer)
@@ -393,8 +407,11 @@ class ViewController: UIViewController {
         
     }
     
+    
+    // MARK: Gestures
     var totalX: Int = 0, totalY: Int = 0
     @objc func panGesture(sender: UIPanGestureRecognizer) {
+        //Flips object based on swipe direction
         let translation = sender.translation(in: sender.view!)
         totalX += Int(translation.x)
         totalY += Int(translation.y)
@@ -415,8 +432,8 @@ class ViewController: UIViewController {
             totalY = 0
         }
     }
-    
     @objc func pinchGesture(sender: UIPinchGestureRecognizer){
+        //Resizes object based on pinching
         if(sender.state == .began || sender.state == .changed){
             let scaler = Float(object.scale.x) * Float(sender.scale)
             object.scale = SCNVector3(scaler, scaler, scaler)
@@ -424,31 +441,67 @@ class ViewController: UIViewController {
         }
     }
     @objc func rotationGesture(sender: UIRotationGestureRecognizer){
+        //Rotates object around the y axis based on rotation
         let rotation = sender.rotation
         let action = SCNAction.rotateBy(x: 0, y: rotation, z: 0, duration: 0)
         object.runAction(action)
     }
-
+    
+    
+    // MARK: Object Manipulation Functions
     func scaleObject(unit: Float){
+        //scales the inital 3d model to be much smaller
         object.scale = SCNVector3(1/(unit + 25), 1/(unit + 25), 1/(unit + 25))
     }
     func moveObject(x: CGFloat, z: CGFloat, sender: Any) {
+        //Moves object from anchor point
         let action = SCNAction.moveBy(x: x, y: 0, z: z, duration: kAnimationDurationMoving)
         execute(action: action, sender: sender)
     }
     
     func deltas() -> (sin: CGFloat, cos: CGFloat) {
+        //Converts units into movable angles
         return (sin: kMovingLengthPerLoop * CGFloat(sin(object.eulerAngles.y)), cos: kMovingLengthPerLoop * CGFloat(cos(object.eulerAngles.y)))
     }
     
     func rotateObject(yRadian: CGFloat, sender: Any) {
+        //All objects rotate around local orgin point
         let action = SCNAction.rotateBy(x: 0, y: yRadian, z: 0, duration: kAnimationDurationMoving)
         execute(action: action, sender: sender)
     }
     
     func execute(action: SCNAction, sender: Any) {
+        //Animates object movements
         let loopAction = SCNAction.repeat(action, count: 6)
         object.runAction(loopAction)
+    }
+    
+    
+    // MARK: ViewController Message Handling
+    public func showMessage(message: String){
+        //Displays a message via alert message box
+        let alert = UIAlertController(title: "A Error Occured", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Continue", style: .default, handler: nil))
+
+        self.present(alert, animated: true)
+    }
+    public func showPlaceholder(message: String, animate: Bool){
+        //Displays message in the middle of the user interface
+        PlaceHolderLabel.text = message
+        PlaceHolderLabel.isHidden = false
+        
+        if(animate){
+            UIView.animate(withDuration: 5, animations: {
+                self.PlaceHolderLabel.alpha = 0
+            }) { (finished) in
+                self.PlaceHolderLabel.alpha = 1
+                self.PlaceHolderLabel.isHidden = true
+            }
+        }
+    }
+    public func hidePlaceholder(isHidden: Bool){
+        //Hides/Unhides placeholder message
+        PlaceHolderLabel.isHidden = isHidden
     }
 }
 

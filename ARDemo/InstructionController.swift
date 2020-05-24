@@ -10,6 +10,9 @@ import Foundation
 import UIKit
 
 class InsturctionController : UIViewController{
+    
+    
+    // MARK: User Interface Objects
     @IBOutlet weak var PlaceholderLabel: UILabel!
     @IBOutlet weak var ControlsImage: UIImageView!
     @IBOutlet weak var CancelButton: UIButton!
@@ -22,15 +25,15 @@ Supported File Types:
 3D Rendering supports: (.dea, .usdz, .usda, .usd, .usdc, .obj & .mtl, .abc, .ply, .stl, .scn)
 
 Gestures:
-Swiping Left/Right will rotate the model around the z-axis
-Swiping Up/Down will rotate the model around the x-axis
-Swiping with Two finger will rotate the model around the y-axis
-Pinching rescales the model
+Swiping Left/Right will rotate the model around the z-axis.
+Swiping Up/Down will rotate the model around the x-axis.
+Rotating with two fingers will rotate the model around the y-axis.
+Pinching rescales the model.
 
 Tips:
 Objects in a model may render off the view of the camera, rotate the phone around your surroundings to locate objects.
 3D Rendering works best with .obj and .mil files.
-To select multiple files, tap ‘select’ from the files menu, then select all the necessary files
+To select multiple files, tap ‘select’ from the files menu, then select all the necessary files.
 
 Data:
 Files are deleted after each session.

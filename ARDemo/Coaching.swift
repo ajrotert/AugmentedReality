@@ -10,11 +10,15 @@ import ARKit
 import UIKit
 
 extension ViewController : ARCoachingOverlayViewDelegate{
+    
+    // MARK: Coaching View Delegates
     func coachingOverlayViewWillActivate(_ coachingOverlayView: ARCoachingOverlayView) {
+        //When the coaching activates all the user controls are hidden
         hideUserInterfaceObjects(val: true, all: true)
     }
     
     func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
+        //When the coaching deactivates the selectable plane is visable to the user. Coaching should not be activated after this point.
         PlaceHolderLabel.isHidden = false
         let text = "Tap a blue surface\nTo place an object."
         PlaceHolderLabel.text = text
@@ -24,7 +28,10 @@ extension ViewController : ARCoachingOverlayViewDelegate{
     func coachingOverlayViewDidRequestSessionReset(_ coachingOverlayView: ARCoachingOverlayView) {
     }
 
+    
+    // MARK: Coaching Properties
     func setupCoachingOverlay() {
+        //Inital coaching properties
         coachingOverlay.session = sceneAR.session
         coachingOverlay.delegate = self
         

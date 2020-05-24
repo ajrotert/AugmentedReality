@@ -2,14 +2,15 @@ import UIKit
 
 extension ViewController : UIDocumentPickerDelegate,UINavigationControllerDelegate {
 
+    // MARK: DocumentPicker Delegates
     func documentMenu(_ documentMenu: UIDocumentPickerViewController, didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
         documentPicker.delegate = self
         documentPicker.allowsMultipleSelection = true
         self.present(documentPicker, animated: true, completion: nil)
     }
 
-    //url returned is the last file to be selected by the user. Since multiple files can be selected they are loaded into a temp directory, NSTempDirectory(). If the url returned is not a supported file, we traverse the directory and load the model if a supported file is found. If only one file is selected, or the last file selected is a supported file, then the model is loaded.
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+        //url returned is the last file to be selected by the user. Since multiple files can be selected they are loaded into a temp directory, NSTempDirectory(). If the url returned is not a supported file, we traverse the directory and load the model if a supported file is found. If only one file is selected, or the last file selected is a supported file, then the model is loaded from the inital url returned.
         print("filename: " + url.path.split(separator: "/").last!)
         print("Rel Path: " + url.relativePath)
         print("Rel String: " + url.relativeString)
