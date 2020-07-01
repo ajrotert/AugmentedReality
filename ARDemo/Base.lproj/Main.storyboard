@@ -192,7 +192,7 @@
                                 </constraints>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gHe-Jx-KQr">
-                                <rect key="frame" x="138" y="812" width="138" height="30"/>
+                                <rect key="frame" x="138" y="802" width="138" height="30"/>
                                 <state key="normal" title="Allow Free Float"/>
                                 <connections>
                                     <action selector="ResizeClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="v3Q-fJ-634"/>
@@ -247,6 +247,18 @@
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Imu-mG-Z9K">
+                                <rect key="frame" x="20" y="208.5" width="44" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="hMt-0W-qha"/>
+                                    <constraint firstAttribute="width" constant="44" id="iyq-E3-Von"/>
+                                </constraints>
+                                <state key="normal" backgroundImage="camera.circle" catalog="system"/>
+                                <connections>
+                                    <action selector="RefreshClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Ihf-yY-yxE"/>
+                                    <action selector="ScreenShotClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="dZX-p0-NhA"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -266,8 +278,9 @@
                             <constraint firstItem="xnX-rc-Efh" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Lfd-uo-Tya"/>
                             <constraint firstItem="xnX-rc-Efh" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Lo9-9d-hUb"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="6VN-xZ-9Gf" secondAttribute="bottom" constant="71" id="NUX-xS-xBg"/>
+                            <constraint firstItem="Imu-mG-Z9K" firstAttribute="top" secondItem="4Qx-wE-GD5" secondAttribute="bottom" constant="8" id="NrO-bH-hSn"/>
                             <constraint firstItem="wtg-Yk-9pa" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="P9z-BA-xAn"/>
-                            <constraint firstItem="gHe-Jx-KQr" firstAttribute="bottom" secondItem="wF2-e2-9CJ" secondAttribute="bottom" id="PrT-xo-Q4b"/>
+                            <constraint firstItem="gHe-Jx-KQr" firstAttribute="bottom" secondItem="wF2-e2-9CJ" secondAttribute="bottom" constant="-10" id="PrT-xo-Q4b"/>
                             <constraint firstAttribute="bottom" secondItem="LGA-uw-bML" secondAttribute="bottom" constant="10" id="QOZ-Hx-L83"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="sQe-fx-k9v" secondAttribute="trailing" constant="20" id="Rmj-SP-WtY"/>
                             <constraint firstItem="sIu-9Z-336" firstAttribute="leading" secondItem="6VN-xZ-9Gf" secondAttribute="trailing" constant="15" id="UMz-Z9-C5C"/>
@@ -295,6 +308,7 @@
                             <constraint firstItem="CEx-eY-4C6" firstAttribute="centerY" secondItem="xnX-rc-Efh" secondAttribute="centerY" id="tcb-4C-bQb"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="wtg-Yk-9pa" secondAttribute="bottom" constant="69.5" id="vez-t2-MyZ"/>
                             <constraint firstItem="xnX-rc-Efh" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="xi7-pB-PuF"/>
+                            <constraint firstItem="Imu-mG-Z9K" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="ypH-1C-0xL"/>
                             <constraint firstItem="wF2-e2-9CJ" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" constant="-20" id="zcm-nH-2sC"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -315,6 +329,7 @@
                         <outlet property="RRightButton" destination="8Kl-jE-dhY" id="9Kg-Mg-oqr"/>
                         <outlet property="RefreshButton" destination="4Qx-wE-GD5" id="ISb-N9-vaB"/>
                         <outlet property="RightButton" destination="sQe-fx-k9v" id="x4G-pt-gFB"/>
+                        <outlet property="ScreenShotButton" destination="Imu-mG-Z9K" id="jae-kS-auH"/>
                         <outlet property="SelectOptions" destination="2tW-ys-msa" id="ezo-hh-HDi"/>
                         <outlet property="UpButton" destination="y9i-Qf-9ao" id="Sw4-FX-7mV"/>
                         <outlet property="sceneAR" destination="xnX-rc-Efh" id="vTT-6c-scF"/>
@@ -418,6 +433,7 @@
         <image name="arrow.left" catalog="system" width="128" height="98"/>
         <image name="arrow.right" catalog="system" width="128" height="98"/>
         <image name="arrow.up" catalog="system" width="120" height="128"/>
+        <image name="camera.circle" catalog="system" width="128" height="121"/>
         <image name="globe" catalog="system" width="128" height="121"/>
         <image name="info.circle" catalog="system" width="128" height="121"/>
         <image name="lightbulb.fill" catalog="system" width="113" height="128"/>

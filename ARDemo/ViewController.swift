@@ -53,6 +53,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var PlaceHolderLabel: UILabel!
     @IBOutlet weak var InfoButton: UIButton!
     @IBOutlet weak var RefreshButton: UIButton!
+    @IBOutlet weak var ScreenShotButton: UIButton!
     
     
     // MARK: User Interface Actions
@@ -225,6 +226,10 @@ class ViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Restart", style: .destructive, handler: {action in self.restartScene()}))
 
         self.present(alert, animated: true)
+    }
+    @IBAction func ScreenShotClicked(_ sender: Any) {
+        let screenshot = sceneAR.snapshot()
+        UIImageWriteToSavedPhotosAlbum(screenshot, self, #selector(savedImage), nil)
     }
     
     
@@ -484,6 +489,18 @@ class ViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Continue", style: .default, handler: nil))
 
         self.present(alert, animated: true)
+    }
+    public func showMessage(message: String, title: String){
+        //Displays a message via alert message box
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        self.present(alert, animated: true)
+    }
+    @objc func savedImage(_ im:UIImage, error:Error?, context:UnsafeMutableRawPointer?) {
+        if let err = error {
+            showMessage(message: err.localizedDescription, title: "An Error Occurred")
+            return
+        }
+        showMessage(message: "Scene imgage saved to file.", title: "Scene Screen Capture")
     }
     public func showPlaceholder(message: String, animate: Bool){
         //Displays message in the middle of the user interface
