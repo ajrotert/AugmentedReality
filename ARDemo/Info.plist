@@ -24,6 +24,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow app to see your surroundings</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allow Augmented Reality Visualizer to save your 3D scene to photos.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -66,7 +68,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Allow Augmented Reality Visualizer to save your 3D scene to photos.</string>
 </dict>
 </plist>

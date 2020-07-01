@@ -352,6 +352,7 @@ class ViewController: UIViewController {
             HideControls.isHidden = val
             InfoButton.isHidden = val
             RefreshButton.isHidden = val
+            ScreenShotButton.isHidden = val
         }
     }
     
@@ -493,6 +494,8 @@ class ViewController: UIViewController {
     public func showMessage(message: String, title: String){
         //Displays a message via alert message box
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+
         self.present(alert, animated: true)
     }
     @objc func savedImage(_ im:UIImage, error:Error?, context:UnsafeMutableRawPointer?) {
@@ -500,7 +503,7 @@ class ViewController: UIViewController {
             showMessage(message: err.localizedDescription, title: "An Error Occurred")
             return
         }
-        showMessage(message: "Scene imgage saved to file.", title: "Scene Screen Capture")
+        showMessage(message: "Image saved in photos.", title: "Scene Screen Capture")
     }
     public func showPlaceholder(message: String, animate: Bool){
         //Displays message in the middle of the user interface
