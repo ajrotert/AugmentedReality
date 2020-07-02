@@ -229,7 +229,19 @@ class ViewController: UIViewController {
     }
     @IBAction func ScreenShotClicked(_ sender: Any) {
         let screenshot = sceneAR.snapshot()
-        UIImageWriteToSavedPhotosAlbum(screenshot, self, #selector(savedImage), nil)
+        let logo = UIImage(named: "BannerLogo");
+        
+        let rect = CGRect(x: 0, y: 0, width: screenshot.size.width, height: screenshot.size.height)
+
+        UIGraphicsBeginImageContextWithOptions(screenshot.size, true, 0)
+        screenshot.draw(in: rect, blendMode: .normal, alpha: 1)
+        let point = CGPoint(x: (screenshot.size.width / 2) - ((logo?.size.width)! / 2), y: 50)
+        logo?.draw(at: point)
+
+        let result = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        
+        UIImageWriteToSavedPhotosAlbum(result, self, #selector(savedImage), nil)
     }
     
     
