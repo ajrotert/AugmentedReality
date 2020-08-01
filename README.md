@@ -13,3 +13,9 @@ I wanted a way to upload a 3D model into reality.
 
 # Tech
 Built using swift.
+
+
+# Preview
+Augmented Reality Visualizer               |  iOS App
+:-------------------------:|:-------------------------:
+![alt text 1](https://github.com/ajrotert/AugmentedReality/blob/master/AugmentedReality.gif?raw=true)  |   iPhone / iPad
